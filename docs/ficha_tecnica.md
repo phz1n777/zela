@@ -11,7 +11,7 @@ A mesma ficha vale para todas as disciplinas. Os PDFs, vídeos e prints de cada 
 | Arquitetura: componentes | App web (PWA) · API FastAPI · Visão (YOLO11n) · SQLite/Postgres · Airflow · Robô UiPath · FonteBot (GenAI) · Placa com QR (Maker Lab) · Docker, Terraform e GitHub Actions |
 | Fontes de dados | Relatos enviados no piloto · fotos locais para avaliar o modelo · RDD2022 (CC BY 4.0) como ponto de partida do treino · registros simulados marcados com `source = demo` |
 | Modelos de IA utilizados | YOLO11n ajustado no RDD2022 (sugestão de "dano na pista", sempre com confirmação humana) · LLM do FonteBot via OpenRouter (`nvidia/nemotron-3.5-super-vl:free`, com fallback) para dúvidas de uso |
-| URL do MVP e repositório | https://ca-zela-uylmp.jollyglacier-50c67627.spaincentral.azurecontainerapps.io · **[link do GitHub]** |
+| URL do MVP e repositório | https://ca-zela-uylmp.jollyglacier-50c67627.spaincentral.azurecontainerapps.io · https://github.com/phz1n777/zela |
 | Indicadores de impacto | Relatos registrados por semana · % de sugestões confirmadas pelo cidadão · tempo do relato ao encaminhamento · ocorrências por status |
 | ODS conectados | **11** (cidades sustentáveis): manutenção urbana mais visível e acompanhável · **9** (infraestrutura): dados para priorizar o reparo de vias · **13** (clima): base para, no futuro, mapear pontos de alagamento ligados a danos na drenagem, fora do MVP |
 
