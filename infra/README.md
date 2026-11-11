@@ -41,5 +41,4 @@ docker push $ACR/zela-api:latest
 - **Banco**: o acesso público fica restrito à regra "serviços do Azure" (0.0.0.0 a 0.0.0.0, não é a internet), com senha e TLS. Nenhuma porta administrativa aberta para `0.0.0.0/0`. Melhoria futura: VNet e endpoint privado.
 - **Fotos**: o disco do Container App é efêmero, então as fotos somem a cada nova revisão. Para o piloto, montar Azure Files.
 - **`/metrics` público**: expõe contadores agregados, sem dados pessoais. Restringir antes de produção.
-- **Dados pessoais**: foto e localização do relato são dados pessoais (LGPD); ver `docs/`. Sem rostos ou placas na foto de demonstração.
-- **Custo**: crédito de estudante (US$ 100). Postgres B1ms e Container App com 1 réplica somam em torno de US$ 25 a 30 por mês; `terraform destroy` após a entrega.
+- **Custo e LGPD**: ver [`docs/custos_e_lgpd.md`](../docs/custos_e_lgpd.md). Estimativa de US$ 30 a 60 por mês; `terraform destroy` após a entrega.
