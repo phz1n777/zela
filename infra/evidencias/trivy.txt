@@ -1,0 +1,4 @@
+│ zela-api:ci (debian 13.7)                                                        │   debian   │        0        │
+Legend:
+- '0': Clean (no security findings detected)
+trivy exit=0

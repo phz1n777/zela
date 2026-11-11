@@ -1,0 +1,4 @@
+6:35PM INF Unknown SCM platform. Use --platform to include links in findings. host=github-fiap
+6:35PM INF 3 commits scanned.
+6:35PM INF scanned ~762238 bytes (762.24 KB) in 2.43s
+6:35PM INF no leaks found
