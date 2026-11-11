@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,6 +13,8 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# RUNNER_LABEL (variável do repositório) escolhe onde os jobs rodam. Sem ela, usa o runner do GitHub.
+# Com RUNNER_LABEL=zela-local, usa o runner próprio registrado no repositório.
 env:
   # Nomes públicos dos recursos (sem segredo). Os identificadores de login ficam em GitHub Secrets.
   ACR_NAME: zelaacruylmp
@@ -20,7 +23,7 @@ env:
 
 jobs:
   testes:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,7 +35,7 @@ jobs:
       - run: python -m pytest api/tests -q --ignore=api/tests/test_vision.py
 
   gitleaks:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,14 +45,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   semgrep:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
     container: semgrep/semgrep:1.97.0
     steps:
       - uses: actions/checkout@v4
       - run: semgrep scan --config p/python --config p/dockerfile --error api infra
 
   terraform:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
@@ -60,7 +63,7 @@ jobs:
       - run: terraform -chdir=infra/terraform validate
 
   imagem:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
     needs: [testes]
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +79,7 @@ jobs:
     # Só a main publica, e só depois de testes, segredos, SAST, Terraform e Trivy passarem.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [testes, gitleaks, semgrep, terraform, imagem]
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
     permissions:
       contents: read
       id-token: write # login OIDC no Azure, sem senha guardada
