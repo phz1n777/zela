@@ -58,7 +58,7 @@ A classificação apoia a triagem. Ela não substitui a avaliação humana nem d
 | [`genai/`](genai) | Generative AI for Engineering | Notebook da Aula 09.1 com o FonteBot, executado e com evidências. Falta o professor confirmar o notebook-base |
 | [`data/`](data) | Big Data & Data Integration | DAG `zela_relatos` rodando no Airflow 2.10, com diagrama, dicionário de dados e evidências. Faltam os prints da interface |
 | [`rpa/`](rpa) | Robotic Process Automation | Assessment, business case, BPMN As-Is e To-Be e especificação do robô prontos. Faltam a prova do portal, o `.xaml` e o vídeo |
-| [`infra/`](infra) | Secure DevOps & Cloud | Dockerfile pronto. A fazer: Terraform, CI e métricas/alerta |
+| [`infra/`](infra) | Secure DevOps & Cloud | Em produção no Azure Container Apps (Terraform, Postgres, alerta de 5xx) e Dockerfile corrigido pelo Trivy. Workflow de CI no repositório e evidências rodadas localmente, porque o Actions da conta está bloqueado por cobrança. Faltam os prints do portal e do alerta, e o documento de custos e LGPD |
 | [`maker/`](maker) | Project-Based Maker Lab | A fazer: placa com QR code, CAD e fabricação |
 | [`docs/`](docs) | BI & Startup Development | Lean Canvas, modelo de negócio, roteiro de entrevistas, ficha técnica e roteiro do pitch prontos. Faltam as conversas e o vídeo |
 
