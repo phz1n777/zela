@@ -1,16 +1,25 @@
 # Evidências do pipeline de segurança
 
-Executadas em 2026-11-11, na máquina do desenvolvedor, com as mesmas ferramentas e verificações do workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
+As ferramentas de segurança foram executadas em 2026-11-11, na máquina do desenvolvedor, com as mesmas verificações do workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
 
 **Por que local:** o GitHub Actions da conta do repositório ficou bloqueado por cobrança ("account is locked due to a billing issue"), então os jobs não chegaram a executar. O workflow permanece no repositório e roda assim que o bloqueio for resolvido.
 
 | Job do CI | Ferramenta | Resultado | Arquivo |
 | --- | --- | --- | --- |
-| `gitleaks` | Gitleaks (histórico git inteiro) | 3 commits, nenhum segredo | [gitleaks.txt](gitleaks.txt) |
+| `gitleaks` | Gitleaks (histórico git inteiro) | Nenhum segredo (a contagem de commits está no arquivo) | [gitleaks.txt](gitleaks.txt) |
 | `semgrep` | Semgrep 1.97.0, regras `p/python` e `p/dockerfile` | 158 regras, 0 achados | [semgrep.txt](semgrep.txt) |
 | `imagem` | Trivy, HIGH e CRITICAL com correção disponível | 0 vulnerabilidades, saída 0 | [trivy.txt](trivy.txt) |
-| `testes` | pytest | 25 testes passando | [testes.txt](testes.txt) |
+| `testes` | pytest | testes passando (contagem e versões no arquivo) | [testes.txt](testes.txt) |
 | `terraform` | `terraform validate` | configuração válida | [terraform_validate.txt](terraform_validate.txt) |
+
+## Observabilidade e alerta (em produção)
+
+| Evidência | O que mostra | Arquivo |
+| --- | --- | --- |
+| Painel do Grafana "Zela: 4 sinais de ouro" | Latência (p50 e p95), tráfego por rota, erros (% de 5xx) e saturação (CPU e memória), lidos pelo Prometheus no MVP publicado no Azure | [grafana_4_sinais.jpg](grafana_4_sinais.jpg) |
+| Alerta de 5xx disparado | O alerta `zela-erros-5xx` (Azure Monitor, consulta nos logs) entrou em `Fired` depois de 10 respostas 500 provocadas de propósito, e avisa por e-mail | [alerta_disparado.json](alerta_disparado.json) |
+
+O primeiro alerta, por métrica, nunca disparou porque a métrica `Requests` do Container App não entrega a divisão por categoria de status. Foi trocado por uma consulta nos logs. Também foi corrigido um defeito que escondia erros: exceções não tratadas não eram contadas nas métricas do Prometheus.
 
 ## Correção feita a partir do Trivy
 

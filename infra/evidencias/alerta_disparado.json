@@ -1,0 +1,9 @@
+[
+  {
+    "alerta": "/subscriptions/<assinatura>/resourceGroups/rg-zela-uylmp/providers/microsoft.insights/scheduledqueryrules/zela-erros-5xx",
+    "descricao": "Mais de 5 respostas HTTP 5xx em 5 minutos.",
+    "disparou_em_utc": "2026-11-11T19:36:50.452862Z",
+    "estado": "Fired",
+    "gravidade": "Sev2"
+  }
+]

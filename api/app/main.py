@@ -108,8 +108,11 @@ def exigir_token_operador(x_operador_token: str = Header(default="")) -> None:
     _exigir("OPERADOR_TOKEN", x_operador_token, "operador")
 
 
+ID_MAXIMO = 2**31 - 1  # limite do inteiro do banco; ids fora dele não existem
+
+
 def buscar(db: Session, report_id: int) -> Report:
-    report = db.get(Report, report_id)
+    report = db.get(Report, report_id) if 0 < report_id <= ID_MAXIMO else None
     if not report:
         raise HTTPException(status_code=404, detail="relato não encontrado")
     return report

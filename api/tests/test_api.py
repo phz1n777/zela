@@ -222,3 +222,9 @@ def test_erro_nao_tratado_conta_como_500_nas_metricas(monkeypatch):
     with TestClient(app, raise_server_exceptions=False) as cliente:
         assert cliente.get("/api/reports/1").status_code == 500
     assert serie._value.get() == antes + 1
+
+
+def test_id_fora_do_intervalo_do_banco_da_404_e_nao_500(c):
+    for rid in (0, -1, 9999999999, 99999999999999999999):
+        assert c.get(f"/api/reports/{rid}").status_code == 404
+        assert c.get(f"/api/reports/{rid}/image").status_code == 404
