@@ -78,3 +78,23 @@ O Terraform ignora a imagem do Container App (`ignore_changes`), para não rever
 Se a conta estiver bloqueada por cobrança, os jobs podem rodar num runner registrado no repositório. Em *Settings → Actions → Runners → New self-hosted runner* o GitHub gera o token de registro; depois `./config.sh --url <repo> --token <token> --labels zela-local` e `./run.sh` (deixe em primeiro plano para poder parar com Ctrl-C). Crie a variável do repositório `RUNNER_LABEL=zela-local`; sem ela o workflow volta ao runner do GitHub.
 
 Cuidados: em repositório público, exija aprovação para PRs de contribuidores externos (*Settings → Actions → General → Fork pull request workflows*); mantenha o runner ligado só enquanto precisar e remova-o depois. O runner precisa de Docker e do Azure CLI. Limitações conhecidas do projeto em [`docs/entrega_devsecops`](../docs/entrega_devsecops/Zela_DevSecOps.pdf), seção 9.
+
+## Pausar e retomar o ambiente (sem apagar)
+
+Para parar quase toda a cobrança sem perder nada (a URL continua a mesma), com o perfil da faculdade (`export AZURE_CONFIG_DIR=$HOME/.azure-fiap`):
+
+```bash
+az containerapp update -n ca-zela-uylmp -g rg-zela-uylmp --min-replicas 0
+az postgres flexible-server stop -g rg-zela-uylmp -n psql-zela-uylmp
+az monitor scheduled-query update -g rg-zela-uylmp -n zela-erros-5xx --disabled true
+```
+
+Para retomar (por exemplo, antes de gravar o pitch ou durante a correção):
+
+```bash
+az postgres flexible-server start -g rg-zela-uylmp -n psql-zela-uylmp
+az containerapp update -n ca-zela-uylmp -g rg-zela-uylmp --min-replicas 1
+az monitor scheduled-query update -g rg-zela-uylmp -n zela-erros-5xx --disabled false
+```
+
+O Azure religa um servidor Postgres parado **sozinho depois de 7 dias**, e a cobrança do servidor volta. Mesmo pausado, continuam cobrando o armazenamento do Postgres e o Container Registry. Só apagar o grupo de recursos (`terraform destroy`) zera a cobrança, e isso é irreversível: a URL pública muda ao recriar.

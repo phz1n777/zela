@@ -1,6 +1,8 @@
 # Roteiro do pitch: 6 blocos em 5 minutos (formato oficial)
 
-> Segue o roteiro do enunciado de BI & Startup Development (prof. Henio Scheidt). Equipe: **Pedro** e **Joseh**. **Os dois precisam aparecer e falar.** A demo tem que ser na **URL pública**, sem telas falsas.
+> Segue o roteiro do enunciado de BI & Startup Development (prof. Henio Scheidt). Equipe: **Pedro** e **Joseh**. **Os dois precisam aparecer e falar.** A demo tem que ser na **URL pública**, sem telas falsas. Tempo máximo: **5:00**.
+
+URL do MVP: https://ca-zela-uylmp.jollyglacier-50c67627.spaincentral.azurecontainerapps.io
 
 ## Rubrica que este roteiro cobre
 
@@ -12,30 +14,92 @@
 | Demo ponta a ponta na URL pública | 3,5 | Bloco 3 |
 | Valor entregue com evidência (uso real, teste documentado ou antes/depois) | 3,5 | Blocos 3 e 5 |
 
-## Os 6 blocos
+## Decisões que precisam ser tomadas antes de gravar
 
-| # | Tempo | Quem | Bloco | O que dizer e mostrar |
-| --- | --- | --- | --- | --- |
-| 1 | 0:00–0:45 | Pedro | **Problema e cidadão** (quem sofre, onde, quanto custa hoje) | Foto real de um buraco no território piloto. Quem passa ali: a pé, de bicicleta, de carro, em cadeira de rodas. Hoje o relato se perde em WhatsApp e e-mail, sem foto nem local, e ninguém sabe se foi encaminhado. Se houver, um dado das conversas: "a administração recebe N avisos por semana e gasta X horas organizando". |
-| 2 | 0:45–1:30 | Pedro | **Solução e proposta de valor** (o que muda para o cidadão) | "Fotografe o dano, confirme a sugestão e acompanhe o encaminhamento." Para o cidadão: relato em menos de 1 minuto, sem cadastro, com protocolo. Diferencial: a IA **sugere** e a pessoa **confirma**, porque a classificação não decide sozinha. |
-| 3 | 1:30–3:00 | Pedro (app e painel) e Joseh (IA e dados) | **Demo do MVP** (fluxo central de verdade) | Na URL pública, pelo celular: (1) ler o QR da placa; (2) foto e local; (3) sugestão "dano na pista" com confiança, e **confirmar**; (4) protocolo; (5) painel, **iniciar triagem**; (6) robô UiPath abrindo a OS no portal (corte de 15 s do vídeo de RPA); (7) consultar o protocolo e ver **"Encaminhado"**. Deixe o relógio visível: mede o tempo do relato até a OS. |
-| 4 | 3:00–4:00 | Pedro | **Modelo de negócio** (Lean Canvas, receita, preço, canais) | Slide do canvas de 9 blocos com os validados destacados. Uma frase sobre **o que mudou desde o CP1**. Cidadão usa grátis, a administração do território assina o painel. Mostre **a conta**: custo mensal estimado, preço testado e quantos territórios cobrem o custo. Canal: piloto gratuito, depois as placas com QR. Use só números documentados. |
-| 5 | 4:00–4:30 | Joseh | **Impacto e ODS** (indicadores e como escala) | Indicadores do piloto ou do teste documentado: relatos que chegaram ao painel, % de sugestões confirmadas, tempo do relato até a OS, leituras do QR. ODS 11, 9 e 13. Escala: mesma plataforma, novo território = novas placas. **Não** dizer que reduziu buracos. |
-| 6 | 4:30–5:00 | Os dois (uma frase cada) | **Time e próximos passos** (o que falta e o que pedem) | Quem fez o quê. O que falta: validar comprador, integração oficial, modelo com fotos locais. O pedido concreto: "um território para um piloto de 4 semanas" ou "contato com a administração do campus". Encerrar com URL e QR na tela. |
+Estas três coisas mudam o que se pode mostrar. O roteiro abaixo já traz o caminho **honesto** para cada uma.
 
-## Checklist antes de gravar
+| # | Decisão | Situação hoje | Caminho recomendado |
+| --- | --- | --- | --- |
+| D1 | **A IA sugere "dano na pista"?** | O MVP no ar roda **sem o modelo** (o `best.pt` ainda não foi treinado). A opção "Deixar o sistema sugerir" não devolve sugestão. | **A:** se o Joseh treinar a tempo, eu refaço a imagem com o YOLO e a demo mostra a sugestão com a confiança. **B:** sem o modelo, escolher a categoria na lista e dizer que a sugestão automática está em treino e aparece no vídeo de Visão. **Não** mostrar sugestão que não existe. |
+| D2 | **O robô UiPath faz parte da demo?** | O robô do Joseh opera o portal local dele, não o MVP no Azure. O MVP não muda de status sozinho. | Mostrar o fluxo do MVP **até "Em triagem"** e, em seguida, o corte do vídeo do robô **dizendo claramente** que ele opera o portal de demonstração. Só mostrar "Encaminhado" no painel se o robô realmente o gravar pela API. |
+| D3 | **Território piloto** | Em branco na ficha e no README. | Escolher um (campus, condomínio ou parque) e usar o mesmo nome no vídeo, no PDF e na ficha. |
 
-- [ ] URL pública no ar e testada no celular pela rede móvel, e ainda funcionando no dia da correção.
-- [ ] Vídeo em **link público** (YouTube não listado ou Drive com acesso a qualquer pessoa com o link).
-- [ ] Dados demo carregados e identificados como demonstração. Um relato real feito no dia, sem rosto nem placa na foto.
-- [ ] Token de operador e senhas fora da tela.
-- [ ] Corte de 10 a 20 s do robô UiPath para o bloco 3.
-- [ ] Números do bloco 4 iguais aos do PDF (custos, preço testado, conversas).
-- [ ] Pedro e Joseh aparecem e falam. Cronômetro: no máximo 5:00.
+## Os 6 blocos, com o texto sugerido
+
+Os textos são rascunhos: ajustem às suas palavras e **só afirmem o que está documentado**. Cerca de 140 palavras por minuto.
+
+### 1. Problema e cidadão · 0:00–0:45 · Pedro
+
+**Mostrar:** uma foto real de um buraco no território piloto (sem rosto e sem placa).
+
+> "Quem anda por [território piloto] a pé, de bicicleta, de carro ou de cadeira de rodas já passou por um buraco assim. O que acontece depois? O aviso vai para o WhatsApp ou para um e-mail, sem foto, sem o local exato. A administração recebe o mesmo aviso três vezes, manda a equipe ao lugar errado, e quem avisou nunca sabe se alguém viu."
+
+Se citarem dados das conversas, digam que as entrevistas foram **simuladas** (autorizadas pelo professor). Não apresentem como pesquisa real.
+
+### 2. Solução e proposta de valor · 0:45–1:30 · Pedro
+
+**Mostrar:** a tela inicial do app no celular.
+
+> "O Zela transforma uma foto e um local em uma ocorrência que dá para acompanhar. Você fotografa o dano, confirma e recebe um número de protocolo. Não pedimos nome, telefone nem e-mail. O sistema sugere a categoria, mas quem confirma é a pessoa, porque a classificação apoia a triagem e não decide sozinha."
+
+Se for o caminho B da decisão D1, troquem "o sistema sugere" por "o cidadão escolhe a categoria, e a sugestão automática por foto está em treinamento".
+
+### 3. Demo do MVP · 1:30–3:00 · Pedro (app e painel) e Joseh (IA e dados)
+
+Passo a passo na URL pública, com os rótulos reais das telas:
+
+| Passo | Quem | O que fazer | O que dizer |
+| --- | --- | --- | --- |
+| 1 | Pedro | No celular, abrir a URL. Ver **"Relatar um dano na via"**. | "Pela rede móvel, sem instalar nada." |
+| 2 | Pedro | Anexar a **foto**, preencher **Onde fica**. Opcional: **Usar minha localização**. | "Uma foto e um endereço aproximado." |
+| 3 | Pedro | **Tipo de problema**: deixar o sistema sugerir (caminho A) ou escolher "Buraco ou dano na pista" (caminho B). Clicar **Enviar relato**. | "A sugestão aparece com a confiança, e eu confirmo." (só no caminho A) |
+| 4 | Pedro | Mostrar o **protocolo** e o status **Recebido**. Em **Acompanhar um relato**, digitar o número e **Consultar**. | "Esse número acompanha o relato do começo ao fim." |
+| 5 | Pedro | Abrir o **painel** (`/painel.html`). Colar o token **antes de gravar** e clicar **Usar token**. Mudar o status do relato para **Em triagem**. | "A equipe vê foto, local e status e libera o relato para o próximo passo." |
+| 6 | Joseh | Corte de 10 a 20 s do robô UiPath. | "O robô registra a ordem de serviço. Aqui ele opera o portal de demonstração; a integração com um portal real depende de autorização." (decisão D2) |
+| 7 | Pedro | Voltar ao app e **Consultar** o protocolo: mostrar o novo status. | "O cidadão vê o que aconteceu com o relato." |
+
+Mantenham um relógio visível: mede o tempo do relato até a triagem. **Não digam** "a prefeitura recebe na hora".
+
+### 4. Modelo de negócio · 3:00–4:00 · Pedro
+
+**Mostrar:** o Lean Canvas de 9 blocos e a conta (do PDF de BI).
+
+> "O cidadão usa de graça. Quem paga é a administração do território, com uma assinatura mensal. Testamos a hipótese de R$ 400 por mês: com esse preço, um território já cobre a infraestrutura e paga a implantação em cerca de dois meses e meio. É uma hipótese, que veio de simulações. Desde o primeiro checkpoint, o que mudou foi [preencher com o histórico do CP1]."
+
+Números a conferir com o PDF de BI: custo fixo, preço e meses de retorno. **Atenção ao custo:** o modelo de negócio usa cerca de R$ 150 por mês de custo fixo, e a estimativa real da nuvem no Azure é de US$ 30 a 60 por mês (documento de custos). Alinhem os dois antes de gravar e digam qual valor vale.
+
+### 5. Impacto e ODS · 4:00–4:30 · Joseh
+
+> "Medimos relatos que chegam ao painel, a porcentagem de sugestões confirmadas e o tempo do relato até a triagem. Contribuímos para os ODS 11, cidades sustentáveis, e 9, infraestrutura, e abrimos caminho para o ODS 13, com o mapeamento futuro de pontos de alagamento. Para outro território, é a mesma plataforma com novas placas."
+
+**Não** digam que reduziram buracos. Sem dados de reparo, não dá para afirmar.
+
+### 6. Time e próximos passos · 4:30–5:00 · os dois, uma frase cada
+
+> Pedro: "Eu fiz o aplicativo, a nuvem e a segurança." Joseh: "Eu fiz os dados, a visão e a automação." Juntos: "Falta validar com um comprador real, treinar o modelo com fotos locais e integrar a um portal oficial. Pedimos um território para um piloto de quatro semanas."
+
+Encerrem com a URL na tela. Ajustem as frases ao que cada um fez.
+
+## Antes de gravar (pré-voo)
+
+**O ambiente do Azure foi pausado para não gerar cobrança.** Antes de gravar ou ensaiar, retomem: a seção "Pausar e retomar" do [infra/README.md](../infra/README.md) traz os 3 comandos (ligar o Postgres, voltar o app a 1 réplica e reativar o alerta). O Postgres leva alguns minutos para subir.
+
+Depois, rodem `docs/pitch_preflight.sh` (confere URL, página, painel, portal de demonstração e a lista de relatos) e depois a lista abaixo.
+
+- [ ] **Banco com dados.** O banco do MVP está vazio. Carreguem dados de demonstração (`python -m app.demo --quantidade 40`, rodado dentro do contêiner) para o painel não aparecer vazio. Eles vêm marcados como **demonstração**. Peçam isso a mim, pois mexe no banco de produção.
+- [ ] **Um relato real feito no dia**, sem rosto nem placa na foto.
+- [ ] URL testada **no celular pela rede móvel**, e o ambiente no ar até o fim da correção (cerca de 26/11).
+- [ ] **Tokens e senhas fora da tela.** Colem o token de operador no painel **antes** de gravar e corte esse trecho, ou usem a aba já autenticada. O painel guarda o token só na aba.
+- [ ] Corte de 10 a 20 s do robô UiPath, com a fala da decisão D2.
+- [ ] Números do bloco 4 **iguais aos do PDF** (custo, preço, meses). Corrijam o custo (R$ 150 contra US$ 30 a 60).
+- [ ] Vídeo em **link público** (YouTube não listado, ou Drive com acesso a qualquer pessoa com o link), com os dois integrantes aparecendo e falando.
+- [ ] Cronômetro: no máximo **5:00**. Ensaiem uma vez cronometrando.
+- [ ] Depois de gravar, coloquem o link do vídeo em `docs/entrega_bi/links.json` e rodem `python3 gerar_pdf.py` na pasta `docs/entrega_bi`.
 
 ## Frases a evitar
 
-- "A IA detecta qualquer problema da rua." Ela só sugere dano na pista, com confirmação.
+- "A IA detecta qualquer problema da rua." Ela só sugere dano na pista, com confirmação (e só quando o modelo estiver treinado).
 - "A prefeitura recebe na hora." O encaminhamento vai para uma fila de demonstração.
-- "Já temos clientes" ou "custa R$ X". Só diga se estiver documentado nas conversas.
+- "Já temos clientes" ou "custa R$ X". Só digam se estiver documentado nas conversas.
 - "Reduzimos os buracos." Sem dado de reparo, não dá para afirmar.
+- "As entrevistas mostraram…" sem dizer que foram **simuladas**.
