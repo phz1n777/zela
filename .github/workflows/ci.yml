@@ -32,7 +32,8 @@ jobs:
           cache: pip
           cache-dependency-path: api/requirements.txt
       - run: pip install -r api/requirements.txt
-      - run: python -m pytest api/tests -q --ignore=api/tests/test_vision.py
+      - run: python -m pytest tests -q --ignore=tests/test_vision.py
+        working-directory: api
 
   gitleaks:
     runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
