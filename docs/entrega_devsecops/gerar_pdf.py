@@ -103,7 +103,7 @@ svg { width: 100%; height: auto; }
 <tr><th>Documentos</th><td><a href="{BLOB}/docs/arquitetura.md">arquitetura</a> · <a href="{BLOB}/docs/custos_e_lgpd.md">custos e LGPD</a> · <a href="{BLOB}/infra/evidencias/README.md">evidências</a> · <a href="{BLOB}/docs/ficha_tecnica.md">ficha técnica</a></td></tr>
 </table>
 
-<div class="aviso"><b>Transparência sobre o pipeline.</b> Os runners hospedados do GitHub Actions estão bloqueados na conta do repositório por um problema de cobrança do GitHub ("account is locked due to a billing issue"). O pipeline roda num <b>runner próprio</b>, registrado no repositório e executado no computador do desenvolvedor. Na execução <a href="{REPO}/actions/runs/43093596676">43093596676</a> (commit 52c4321) os 6 jobs terminaram em sucesso, inclusive o deploy. A seção 9 lista as limitações conhecidas.</div>
+<div class="aviso"><b>Transparência sobre o pipeline.</b> Os runners hospedados do GitHub Actions estão bloqueados na conta do repositório por um problema de cobrança do GitHub ("account is locked due to a billing issue"). O pipeline foi executado num <b>runner próprio</b>, registrado no repositório e rodando no computador do desenvolvedor, e depois removido. Na execução <a href="{REPO}/actions/runs/43093596676">43093596676</a> (commit 52c4321) os 6 jobs terminaram em sucesso, inclusive o deploy. A seção 9 lista as limitações conhecidas.</div>
 
 <h2>1. Arquitetura</h2>
 {DIAGRAMA}
@@ -129,7 +129,7 @@ svg { width: 100%; height: auto; }
 </table>
 
 <h2>3. Pipeline DevSecOps</h2>
-<p>Workflow: <a href="{BLOB}/.github/workflows/ci.yml">.github/workflows/ci.yml</a>, com 6 jobs: <code>testes</code>, <code>gitleaks</code>, <code>semgrep</code>, <code>terraform</code>, <code>imagem</code> (Trivy) e <code>deploy</code>. Roda a cada push e pull request, e o <code>deploy</code> só na <code>main</code>, depois de todos os outros. O runner é escolhido pela variável do repositório <code>RUNNER_LABEL</code> (hoje <code>zela-local</code>). O login no Azure é por OIDC, com os identificadores em GitHub Secrets (<code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_SUBSCRIPTION_ID</code>) e sem senha guardada.</p>
+<p>Workflow: <a href="{BLOB}/.github/workflows/ci.yml">.github/workflows/ci.yml</a>, com 6 jobs: <code>testes</code>, <code>gitleaks</code>, <code>semgrep</code>, <code>terraform</code>, <code>imagem</code> (Trivy) e <code>deploy</code>. Roda a cada push e pull request, e o <code>deploy</code> só na <code>main</code>, depois de todos os outros. O runner é escolhido pela variável opcional <code>RUNNER_LABEL</code> (sem ela, usa o runner do GitHub). O login no Azure é por OIDC, com os identificadores em GitHub Secrets (<code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_SUBSCRIPTION_ID</code>) e sem senha guardada.</p>
 <h3>Resultado no GitHub Actions</h3>
 <p>Execução <a href="{REPO}/actions/runs/43093596676">43093596676</a>, commit <code>52c4321</code>, em runner próprio:</p>
 <table>
@@ -215,7 +215,7 @@ terraform init &amp;&amp; terraform plan -out tf.plan &amp;&amp; terraform apply
 <h2>9. Limitações conhecidas</h2>
 <h3>Pipeline e entrega</h3>
 <ul>
-<li><b>Sem runner hospedado do GitHub.</b> A cobrança da conta está bloqueada, então o pipeline depende de um runner no computador do desenvolvedor, que precisa estar ligado. Um runner próprio em repositório público é um risco (um pull request malicioso executaria código na máquina). Mitigação: PRs de contribuidores externos exigem aprovação manual, e o runner deve ser removido depois da correção.</li>
+<li><b>Sem runner hospedado do GitHub.</b> A cobrança da conta está bloqueada. A execução verde foi feita num runner no computador do desenvolvedor, que depois foi removido (um runner próprio em repositório público é um risco: um pull request malicioso executaria código na máquina). Por isso, <b>novos pushes não rodam o pipeline</b> enquanto o bloqueio durar, e a evidência do pipeline é essa execução e as saídas locais.</li>
 <li><b>"Barrada e corrigida" não é uma execução do Actions.</b> A reprovação do Trivy e a correção foram verificadas localmente.</li>
 <li><b>O Terraform não é aplicado pelo pipeline.</b> O CI só roda <code>validate</code> e <code>fmt</code>; o <code>apply</code> é manual, e o state fica na máquina do desenvolvedor (com a senha do banco).</li>
 <li><b>Escopo das verificações.</b> O <code>test_vision.py</code> fica fora do CI, o Trivy varre só vulnerabilidades (não configuração) e o Semgrep usa regras da comunidade. O teste de fumaça do deploy confere apenas o <code>/health</code>.</li>

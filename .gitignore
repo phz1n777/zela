@@ -21,3 +21,7 @@ data/airflow/
 data/saida/
 *.plan
 infra/terraform/.terraform/
+
+# Configuração local da ferramenta de desenvolvimento e HTML intermediário dos PDFs
+.claude/
+docs/entrega_*/*.html

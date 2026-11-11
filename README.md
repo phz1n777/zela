@@ -1,6 +1,8 @@
 # Zela: zeladoria urbana por foto
 
 > Nome provisório. Global Solution 2026.2 · CitizenTech · Engenharia de Software 4º ano · entrega de 9 a 19 de novembro de 2026.
+>
+> **MVP no ar:** https://ca-zela-uylmp.jollyglacier-50c67627.spaincentral.azurecontainerapps.io · **Repositório:** https://github.com/phz1n777/zela
 
 Você fotografa o dano na via e confirma a sugestão do sistema. Depois, acompanha o encaminhamento da ocorrência.
 
@@ -37,8 +39,8 @@ A classificação apoia a triagem. Ela não substitui a avaliação humana nem d
 | Proposta de valor | Transformar uma foto e um local em uma ocorrência estruturada e acompanhável |
 | Arquitetura: componentes | PWA · API FastAPI · Visão (YOLO) · SQLite/Postgres · Airflow · Robô UiPath · FonteBot (GenAI) · Placa QR (Maker Lab) · Docker, Terraform e GitHub Actions |
 | Fontes de dados | Relatos enviados no piloto · fotos locais para avaliar o modelo · RDD2022 (CC BY 4.0) como ponto de partida do treino · registros simulados marcados como demonstração |
-| Modelos de IA utilizados | YOLO11n ajustado no RDD2022 para dano na pista · LLM do FonteBot para dúvidas de uso (modelo a definir no notebook de GenAI) |
-| URL do MVP e repositório | _a preencher após o deploy_ |
+| Modelos de IA utilizados | YOLO11n ajustado no RDD2022 para dano na pista · LLM do FonteBot via OpenRouter (`nvidia/nemotron-3.5-super-vl:free`, com fallback) para dúvidas de uso |
+| URL do MVP e repositório | https://ca-zela-uylmp.jollyglacier-50c67627.spaincentral.azurecontainerapps.io · https://github.com/phz1n777/zela |
 | Indicadores de impacto | Relatos registrados no piloto · % de sugestões confirmadas pelo cidadão · tempo do relato ao encaminhamento · ocorrências por status |
 | ODS conectados | 11 (cidades sustentáveis), 9 (infraestrutura) e 13 (clima), com a contribuição descrita de forma concreta |
 
@@ -54,13 +56,13 @@ A classificação apoia a triagem. Ela não substitui a avaliação humana nem d
 | --- | --- | --- |
 | [`api/`](api) | Base de todas | API no contrato comum (`reports`), com confirmação humana, triagem e testes |
 | [`web/`](web) | Base / BI (demo do pitch) | App do cidadão (relato, confirmação e protocolo) e painel de triagem, servidos pela API |
-| [`vision/`](vision) | Applied Computer Vision | Pronto para treinar no Colab. A API usa o modelo quando o `best.pt` existe |
+| [`vision/`](vision) | Applied Computer Vision | Pronto para treinar no Colab. A API usa o modelo quando o `best.pt` existe. **Ainda sem o modelo treinado**: o MVP no ar roda sem a sugestão automática |
 | [`genai/`](genai) | Generative AI for Engineering | Notebook da Aula 09.1 com o FonteBot, executado e com evidências. Falta o professor confirmar o notebook-base |
-| [`data/`](data) | Big Data & Data Integration | DAG `zela_relatos` rodando no Airflow 2.10, com diagrama, dicionário de dados e evidências. Faltam os prints da interface |
-| [`rpa/`](rpa) | Robotic Process Automation | Assessment, business case, BPMN As-Is e To-Be e especificação do robô prontos. Faltam a prova do portal, o `.xaml` e o vídeo |
-| [`infra/`](infra) | Secure DevOps & Cloud | Em produção no Azure Container Apps (Terraform, Postgres, alerta de 5xx) e Dockerfile corrigido pelo Trivy. Workflow de CI no repositório e evidências rodadas localmente, porque o Actions da conta está bloqueado por cobrança. PDF da entrega em [docs/entrega_devsecops](docs/entrega_devsecops/Zela_DevSecOps.pdf) e documento de [custos e LGPD](docs/custos_e_lgpd.md) prontos. Faltam os prints do portal e do alerta |
-| [`maker/`](maker) | Project-Based Maker Lab | A fazer: placa com QR code, CAD e fabricação |
-| [`docs/`](docs) | BI & Startup Development | Lean Canvas, modelo de negócio, roteiro de entrevistas, ficha técnica e roteiro do pitch prontos. Faltam as conversas e o vídeo |
+| [`data/`](data) | Big Data & Data Integration | DAG `zela_relatos` rodando no Airflow 2.10, com diagrama e dicionário de dados. A entrega oficial, com os prints do Airflow e o PDF, está no repositório do Joseh: https://github.com/Zoviskgabriel/BigData-Data-Zeladoria-Urbana-por-Foto |
+| [`rpa/`](rpa) | Robotic Process Automation | Assessment, business case, BPMN As-Is e To-Be e especificação do robô. O pacote oficial (PDF, projeto UiPath com `.xaml` e vídeo) foi entregue à parte pelo Joseh. O robô opera o portal de demonstração dele, não o MVP no Azure |
+| [`infra/`](infra) | Secure DevOps & Cloud | Em produção no Azure Container Apps (Terraform, Postgres, painel no Grafana e alerta de 5xx que disparou). Pipeline no GitHub Actions com Gitleaks, Semgrep, Trivy e deploy por OIDC: a execução [43093596676](https://github.com/phz1n777/zela/actions/runs/43093596676) passou nos 6 jobs, em runner próprio, porque os runners do GitHub estão bloqueados por cobrança. PDF da entrega em [docs/entrega_devsecops](docs/entrega_devsecops/Zela_DevSecOps.pdf), com as limitações conhecidas |
+| [`maker/`](maker) | Project-Based Maker Lab | **Não iniciado.** Sem responsável. O enunciado pede o redesenho de um objeto real da cidade, com CAD, peças fabricadas e publicação no MakerWorld |
+| [`docs/`](docs) | BI & Startup Development | Lean Canvas, modelo de negócio, roteiro de entrevistas, ficha técnica, roteiro do pitch e PDF da entrega. Faltam o histórico do CP1 e o vídeo do pitch |
 
 ## Contrato de dados compartilhado
 
@@ -141,7 +143,7 @@ cd api
 ## Segurança, acessibilidade e LGPD
 
 - Não coletamos nome, CPF nem telefone, só a foto, o local e a descrição. Pedimos para evitar rostos e placas nas fotos.
-- As fotos são salvas com nome gerado pela API, com limite de 5 MB e só em JPEG, PNG ou WebP.
+- As fotos são salvas com nome gerado pela API, com limite de 5 MB e só em JPEG, PNG ou WebP. O EXIF (GPS e modelo do aparelho) é removido no upload.
 - As rotas do robô e da triagem exigem tokens diferentes. A confirmação de categoria exige o token devolvido só para quem enviou o relato. Os segredos ficam no `.env`, fora do git, e as portas administrativas não ficam expostas ao público.
 - O container roda com usuário sem privilégios.
 - Linguagem simples, bom contraste, navegação por teclado e uma lista como alternativa ao mapa.
