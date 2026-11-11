@@ -51,7 +51,7 @@ O GitHub Actions é gratuito para repositório público, e o OpenRouter usa mode
 ### Princípios aplicados
 
 - **Finalidade e necessidade:** os dados servem só para registrar e encaminhar o dano na via. Nada é usado para outro fim, e nenhum dado é vendido.
-- **Minimização:** sem cadastro, sem rastreamento de usuário. A foto é limitada a JPEG, PNG ou WebP de até 5 MB, com nome de arquivo gerado pelo servidor, e nunca o nome enviado.
+- **Minimização:** sem cadastro, sem rastreamento de usuário. A foto é limitada a JPEG, PNG ou WebP de até 5 MB, tem os metadados (EXIF e GPS) removidos no upload e recebe um nome gerado pelo servidor, nunca o nome enviado.
 - **Segurança:** HTTPS na borda; segredos (tokens e senha do banco) em *secrets* do Container App e fora do git; usuário não-root no contêiner; ações de triagem e do robô protegidas por token; Gitleaks, Semgrep e Trivy rodados sobre o código e a imagem.
 - **Humano no controle:** a IA só sugere a categoria, e o cidadão confirma ou corrige antes da triagem.
 - **Dados de demonstração:** os registros simulados são marcados com `source = demo` e removíveis com `python -m app.demo --apagar`.
@@ -72,7 +72,7 @@ Como o relato é anônimo, o sistema não consegue localizar os dados de uma pes
 Estas lacunas existem hoje no MVP e devem ser consideradas antes de qualquer uso real:
 
 1. **Leitura pública.** `GET /api/reports`, `GET /api/reports/{id}` e a foto não exigem login, porque o painel da demo os consome. Qualquer pessoa com a URL pode listar relatos, localizações e fotos. Mitigação futura: exigir o token do operador na listagem e na foto, e expor publicamente só o protocolo de cada relato.
-2. **Metadados da foto (EXIF).** A foto é gravada como veio e pode carregar coordenadas GPS e o modelo do aparelho. Mitigação futura: remover o EXIF no upload.
+2. ~~Metadados da foto (EXIF)~~ **Tratado.** A API remove EXIF (GPS e modelo do aparelho), XMP, comentários e perfil de cor antes de gravar a foto, aplicando a orientação nos pixels (`api/app/services/imagem.py`, com testes). Arquivos que não são imagens de verdade são recusados com erro 400. Fotos enviadas antes desta mudança não foram reprocessadas.
 3. **Texto livre.** O campo de descrição pode receber nome ou telefone. Mitigação futura: aviso no formulário para não incluir dados pessoais e revisão pela triagem.
 4. **Sem exclusão nem retenção definida.** Não há rota para apagar um relato nem prazo de retenção. Proposta: apagar fotos e relatos encerrados após 12 meses e criar a rota de exclusão para o operador.
 5. **Fotos em disco efêmero.** As fotos somem a cada novo deploy do contêiner, o que é uma falha de disponibilidade e, por acaso, limita a retenção. Mitigação futura: Azure Files com política de retenção.

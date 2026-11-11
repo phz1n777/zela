@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from .db import Report, SessionLocal, init_db
 from . import portal_demo
-from .services import vision
+from .services import imagem, vision
 
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "./uploads"))
 # App do cidadão e painel (pasta web/ do repositório). No container: /app/web.
@@ -178,6 +178,11 @@ async def criar_relato(
         raise HTTPException(status_code=413, detail="foto maior que 5 MB")
     if not conteudo:
         raise HTTPException(status_code=400, detail="foto vazia")
+
+    try:
+        conteudo = imagem.limpar(conteudo, photo.content_type)
+    except imagem.FotoInvalida as erro:
+        raise HTTPException(status_code=400, detail=str(erro)) from erro
 
     # Nome gerado por nós: nunca usamos o nome de arquivo enviado pelo cliente.
     caminho = UPLOAD_DIR / f"{uuid.uuid4().hex}{extensao}"

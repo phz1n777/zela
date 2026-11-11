@@ -1,3 +1,4 @@
+import io
 import os
 import tempfile
 
@@ -9,12 +10,21 @@ os.environ["OPERADOR_TOKEN"] = "token-operador-teste"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from PIL import Image  # noqa: E402
 
 from app import main  # noqa: E402
 from app.main import app  # noqa: E402
 from app.services import vision  # noqa: E402
 
-PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 100
+
+
+def _imagem(formato, tamanho=(8, 6), **opcoes):
+    saida = io.BytesIO()
+    Image.new("RGB", tamanho, (200, 30, 30)).save(saida, format=formato, **opcoes)
+    return saida.getvalue()
+
+
+PNG = _imagem("PNG")
 ROBO = {"x-robo-token": "token-robo-teste"}
 OPERADOR = {"x-operador-token": "token-operador-teste"}
 
@@ -127,7 +137,7 @@ def test_rotas_protegidas_exigem_token(c):
 def test_foto_pode_ser_baixada(c):
     rid = enviar(c).json()["id"]
     r = c.get(f"/api/reports/{rid}/image")
-    assert r.status_code == 200 and r.content == PNG
+    assert r.status_code == 200 and r.content.startswith(b"\x89PNG")
     assert c.get("/api/reports/999999/image").status_code == 404
 
 
@@ -157,3 +167,46 @@ def test_data_sai_com_fuso_utc(c):
     d = enviar(c).json()
     assert d["created_at"].endswith("Z") or d["created_at"].endswith("+00:00")
     assert c.get(f"/api/reports/{d['id']}").json()["created_at"] == d["created_at"]
+
+
+def _jpeg_com_gps_e_rotacao():
+    exif = Image.Exif()
+    exif[0x010F] = "FabricanteSecreto"  # Make
+    exif[0x0112] = 6  # orientação: girar 90 graus
+    exif[0x8825] = {1: "S", 2: (23.0, 33.0, 0.0), 3: "W", 4: (46.0, 38.0, 0.0)}  # GPS
+    return _imagem("JPEG", tamanho=(8, 4), exif=exif)
+
+
+def test_foto_perde_exif_e_gps_antes_de_ser_gravada(c):
+    original = _jpeg_com_gps_e_rotacao()
+    assert b"FabricanteSecreto" in original and Image.open(io.BytesIO(original)).getexif()
+
+    r = c.post(
+        "/api/reports",
+        data={"location": "Rua Augusta, 100"},
+        files={"photo": ("f.jpg", original, "image/jpeg")},
+    )
+    assert r.status_code == 201
+    salvo = c.get(f"/api/reports/{r.json()['id']}/image").content
+    assert b"FabricanteSecreto" not in salvo
+    foto = Image.open(io.BytesIO(salvo))
+    assert not dict(foto.getexif())  # sem Make, GPS ou orientação
+    assert foto.size == (4, 8)  # a rotação do EXIF foi aplicada nos pixels
+
+
+def test_png_com_texto_perde_os_metadados(c):
+    saida = io.BytesIO()
+    from PIL.PngImagePlugin import PngInfo
+
+    info = PngInfo()
+    info.add_text("Comment", "segredo-no-png")
+    Image.new("RGB", (4, 4)).save(saida, format="PNG", pnginfo=info)
+    r = c.post("/api/reports", data={"location": "Rua B, 2"}, files={"photo": ("f.png", saida.getvalue(), "image/png")})
+    assert r.status_code == 201
+    assert b"segredo-no-png" not in c.get(f"/api/reports/{r.json()['id']}/image").content
+
+
+def test_rejeita_arquivo_que_finge_ser_foto(c):
+    for conteudo, tipo in ((b"nao sou imagem", "image/png"), (PNG, "image/jpeg")):
+        r = c.post("/api/reports", data={"location": "Rua C, 3"}, files={"photo": ("x", conteudo, tipo)})
+        assert r.status_code == 400
