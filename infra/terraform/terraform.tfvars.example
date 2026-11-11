@@ -1,0 +1,7 @@
+# Copie para terraform.tfvars (ignorado pelo git) e preencha.
+subscription_id = "00000000-0000-0000-0000-000000000000"
+location        = "brazilsouth"
+email_alerta    = "voce@exemplo.com"
+robo_token      = "gere-com-python-secrets"
+operador_token  = "gere-com-python-secrets"
+# imagem        = "zelaacrXXXXX.azurecr.io/zela-api:latest"  # depois do primeiro push

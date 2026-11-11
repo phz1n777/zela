@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    env_file: .env
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      args:
+        COM_VISAO: ${COM_VISAO:-0}
+    env_file: .env
+    environment:
+      UPLOAD_DIR: /app/uploads
+      VISION_MODEL_PATH: /app/modelos/best.pt
+    ports:
+      - "8000:8000"
+    volumes:
+      - fotos:/app/uploads
+      - ./vision/modelos:/app/modelos:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dbdata:
+  fotos:

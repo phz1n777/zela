@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zela: relatar dano na via</title>
+  <meta name="description" content="Fotografe o dano na via, confirme a sugestão do sistema e acompanhe o encaminhamento.">
+  <meta name="theme-color" content="#0b5d4b">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icone.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/estilo.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="pular" href="#principal">Pular para o conteúdo</a>
+  <header class="topo">
+    <div class="conteudo">
+      <a href="/">Zela</a>
+      <nav aria-label="Principal"><a href="#acompanhar">Acompanhar relato</a></nav>
+    </div>
+  </header>
+
+  <main id="principal" class="conteudo">
+    <h1>Relatar um dano na via</h1>
+    <p class="lead">Fotografe o dano, confirme a sugestão do sistema e acompanhe o encaminhamento. Não pedimos nome, telefone nem e-mail.</p>
+
+    <div class="cartao aviso">
+      <strong>Não é canal de emergência.</strong>
+      Se houver risco imediato a pessoas, ligue <a href="tel:193">193</a> (Bombeiros) ou <a href="tel:190">190</a> (Polícia Militar).
+    </div>
+
+    <p class="dica">Fase piloto: funciona só no território piloto, e parte dos registros do painel são simulados. O serviço não promete reparo nem prazo.</p>
+
+    <!-- Passo 1: relato -->
+    <section id="passo-relato" class="cartao" aria-labelledby="t-relato">
+      <h2 id="t-relato">1. Envie o relato</h2>
+      <form id="form-relato" novalidate>
+        <div class="campo">
+          <label for="foto">Foto do dano</label>
+          <span class="dica" id="dica-foto">De perto e com boa luz. Evite rostos e placas de carro. Não pare no meio da via para fotografar.</span>
+          <input id="foto" name="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" required aria-describedby="dica-foto">
+          <img id="previa" class="previa escondido" alt="Prévia da foto escolhida">
+        </div>
+
+        <div class="campo">
+          <label for="local">Onde fica</label>
+          <span class="dica" id="dica-local">Endereço aproximado ou ponto de referência. Exemplo: Rua Augusta, 500, em frente à padaria.</span>
+          <input id="local" name="location" type="text" required minlength="3" maxlength="200" autocomplete="street-address" aria-describedby="dica-local">
+          <div class="acoes espaco-acima">
+            <button type="button" id="usar-gps" class="botao secundario">Usar minha localização (opcional)</button>
+          </div>
+          <p id="gps-estado" class="dica" role="status"></p>
+        </div>
+
+        <div class="campo">
+          <label for="descricao">Descrição (opcional)</label>
+          <span class="dica" id="dica-desc">Ajuda a triagem. Até 500 caracteres.</span>
+          <textarea id="descricao" name="description" maxlength="500" aria-describedby="dica-desc"></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="categoria">Tipo de problema</label>
+          <span class="dica" id="dica-cat">Se for buraco ou dano na pista, deixe o sistema sugerir. Para outros problemas, escolha na lista.</span>
+          <select id="categoria" name="category" aria-describedby="dica-cat">
+            <option value="">Deixar o sistema sugerir</option>
+          </select>
+        </div>
+
+        <div id="erro-relato" class="cartao falha escondido" role="alert"></div>
+        <button type="submit" class="botao largo" id="enviar">Enviar relato</button>
+      </form>
+    </section>
+
+    <!-- Passo 2: confirmação -->
+    <section id="passo-confirmar" class="cartao escondido" aria-labelledby="t-confirmar" tabindex="-1">
+      <h2 id="t-confirmar">2. Confira a categoria</h2>
+      <p id="sugestao"></p>
+      <p class="dica">A sugestão apoia a triagem. Ela não diz se a via é segura nem qual é a gravidade do dano.</p>
+      <form id="form-confirmar">
+        <fieldset class="opcoes" id="opcoes-categoria">
+          <legend>Qual é o problema?</legend>
+        </fieldset>
+        <div id="erro-confirmar" class="cartao falha escondido" role="alert"></div>
+        <button type="submit" class="botao largo">Confirmar</button>
+      </form>
+    </section>
+
+    <!-- Passo 3: protocolo -->
+    <section id="passo-protocolo" class="cartao sucesso escondido" aria-labelledby="t-protocolo" tabindex="-1">
+      <h2 id="t-protocolo">Relato registrado</h2>
+      <p>Guarde o número do protocolo para acompanhar:</p>
+      <p class="protocolo" id="numero-protocolo"></p>
+      <p id="resumo-protocolo"></p>
+      <div class="acoes">
+        <button type="button" class="botao secundario" id="novo-relato">Fazer outro relato</button>
+      </div>
+    </section>
+
+    <!-- Acompanhar -->
+    <section id="acompanhar" class="cartao" aria-labelledby="t-acompanhar">
+      <h2 id="t-acompanhar">Acompanhar um relato</h2>
+      <form id="form-acompanhar" class="filtros">
+        <div class="campo">
+          <label for="protocolo">Número do protocolo</label>
+          <input id="protocolo" type="number" inputmode="numeric" min="1" required>
+        </div>
+        <button type="submit" class="botao">Consultar</button>
+      </form>
+      <div id="resultado-acompanhar" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="conteudo">
+      Zela: protótipo acadêmico da Global Solution 2026.2 (FIAP), fase piloto.
+      <a href="/painel.html">Painel de ocorrências</a>
+    </div>
+  </footer>
+</body>
+</html>

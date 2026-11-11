@@ -1,0 +1,7 @@
+# Contexto do build é a raiz do repo: só api/ e web/ entram na imagem.
+*
+!api/app
+!api/requirements.txt
+!api/requirements-vision.txt
+!web
+**/__pycache__

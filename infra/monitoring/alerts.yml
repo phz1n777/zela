@@ -1,0 +1,15 @@
+groups:
+  - name: zela
+    rules:
+      - alert: ZelaErros5xx
+        expr: sum(rate(zela_requisicoes_total{status=~"5.."}[5m])) > 0.05
+        for: 2m
+        labels: { severity: warning }
+        annotations:
+          summary: "API do Zela devolvendo erros 5xx"
+      - alert: ZelaLatenciaAlta
+        expr: histogram_quantile(0.95, sum(rate(zela_latencia_segundos_bucket[5m])) by (le)) > 2
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "p95 da latência acima de 2 s"

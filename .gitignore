@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.db
+uploads/
+.dev/
+node_modules/
+dist/
+.pytest_cache/
+
+# Terraform: state e variáveis ficam fora do repo (exigência da disciplina de DevOps)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+vision/datasets/
+
+# Airflow local (metadados, logs, senha do admin) e saídas da DAG
+data/airflow/
+data/saida/
+*.plan
+infra/terraform/.terraform/

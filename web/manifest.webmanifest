@@ -1,0 +1,14 @@
+{
+  "name": "Zela: zeladoria urbana por foto",
+  "short_name": "Zela",
+  "description": "Fotografe o dano na via, confirme a sugestão e acompanhe o encaminhamento.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f5f1",
+  "theme_color": "#0b5d4b",
+  "icons": [
+    { "src": "/icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

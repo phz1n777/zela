@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="defs_as_is" targetNamespace="https://github.com/zela/bpmn" exporter="gerar_bpmn.py" exporterVersion="1">
+  <bpmn:collaboration id="colab">
+    <bpmn:participant id="pool" name="As-Is: relato de dano na via sem o Zela" processRef="proc_as_is" />
+  </bpmn:collaboration>
+  <bpmn:process id="proc_as_is" name="As-Is: relato de dano na via sem o Zela" isExecutable="false">
+    <bpmn:laneSet id="lanes"><bpmn:lane id="lane_0" name="Cidadão"><bpmn:flowNodeRef>a_ini</bpmn:flowNodeRef><bpmn:flowNodeRef>a_msg</bpmn:flowNodeRef><bpmn:flowNodeRef>a_resp</bpmn:flowNodeRef><bpmn:flowNodeRef>a_fim</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="lane_1" name="Equipe de zeladoria"><bpmn:flowNodeRef>a_ler</bpmn:flowNodeRef><bpmn:flowNodeRef>a_gw</bpmn:flowNodeRef><bpmn:flowNodeRef>a_dig</bpmn:flowNodeRef><bpmn:flowNodeRef>a_anota</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="lane_2" name="Portal de manutenção"><bpmn:flowNodeRef>a_os</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet>
+    <bpmn:startEvent id="a_ini" name="Vê um dano na via"><bpmn:outgoing>a_ini_a_msg</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="a_msg" name="Manda mensagem (WhatsApp, e-mail ou conversa)"><bpmn:incoming>a_ini_a_msg</bpmn:incoming><bpmn:outgoing>a_msg_a_ler</bpmn:outgoing></bpmn:task>
+    <bpmn:userTask id="a_ler" name="Lê a mensagem e tenta entender o local"><bpmn:incoming>a_msg_a_ler</bpmn:incoming><bpmn:incoming>a_resp_a_ler</bpmn:incoming><bpmn:outgoing>a_ler_a_gw</bpmn:outgoing></bpmn:userTask>
+    <bpmn:exclusiveGateway id="a_gw" name="Tem foto e local claros?"><bpmn:incoming>a_ler_a_gw</bpmn:incoming><bpmn:outgoing>a_gw_a_dig</bpmn:outgoing><bpmn:outgoing>a_gw_a_resp</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="a_resp" name="Recebe pedido de foto ou referência e responde (às vezes não)"><bpmn:incoming>a_gw_a_resp</bpmn:incoming><bpmn:outgoing>a_resp_a_ler</bpmn:outgoing></bpmn:task>
+    <bpmn:userTask id="a_dig" name="Redigita local, tipo e descrição e anexa a foto"><bpmn:incoming>a_gw_a_dig</bpmn:incoming><bpmn:outgoing>a_dig_a_os</bpmn:outgoing></bpmn:userTask>
+    <bpmn:serviceTask id="a_os" name="Registra a ordem de serviço"><bpmn:incoming>a_dig_a_os</bpmn:incoming><bpmn:outgoing>a_os_a_anota</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:userTask id="a_anota" name="Anota o número à parte (planilha ou papel)"><bpmn:incoming>a_os_a_anota</bpmn:incoming><bpmn:outgoing>a_anota_a_fim</bpmn:outgoing></bpmn:userTask>
+    <bpmn:endEvent id="a_fim" name="Cidadão não sabe se foi encaminhado"><bpmn:incoming>a_anota_a_fim</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="a_ini_a_msg" sourceRef="a_ini" targetRef="a_msg" />
+    <bpmn:sequenceFlow id="a_msg_a_ler" sourceRef="a_msg" targetRef="a_ler" />
+    <bpmn:sequenceFlow id="a_ler_a_gw" sourceRef="a_ler" targetRef="a_gw" />
+    <bpmn:sequenceFlow id="a_gw_a_dig" name="sim" sourceRef="a_gw" targetRef="a_dig" />
+    <bpmn:sequenceFlow id="a_gw_a_resp" name="não: pede foto ou local" sourceRef="a_gw" targetRef="a_resp" />
+    <bpmn:sequenceFlow id="a_resp_a_ler" sourceRef="a_resp" targetRef="a_ler" />
+    <bpmn:sequenceFlow id="a_dig_a_os" sourceRef="a_dig" targetRef="a_os" />
+    <bpmn:sequenceFlow id="a_os_a_anota" sourceRef="a_os" targetRef="a_anota" />
+    <bpmn:sequenceFlow id="a_anota_a_fim" sourceRef="a_anota" targetRef="a_fim" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="diagrama">
+    <bpmndi:BPMNPlane id="plano" bpmnElement="colab">
+      <bpmndi:BPMNShape id="pool_di" bpmnElement="pool" isHorizontal="true"><dc:Bounds x="120" y="80" width="1410" height="450" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_0_di" bpmnElement="lane_0" isHorizontal="true"><dc:Bounds x="150" y="80" width="1380" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_1_di" bpmnElement="lane_1" isHorizontal="true"><dc:Bounds x="150" y="230" width="1380" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_2_di" bpmnElement="lane_2" isHorizontal="true"><dc:Bounds x="150" y="380" width="1380" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_ini_di" bpmnElement="a_ini"><dc:Bounds x="202" y="137" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_msg_di" bpmnElement="a_msg"><dc:Bounds x="325" y="115" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_ler_di" bpmnElement="a_ler"><dc:Bounds x="495" y="265" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_gw_di" bpmnElement="a_gw" isMarkerVisible="true"><dc:Bounds x="705" y="280" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_resp_di" bpmnElement="a_resp"><dc:Bounds x="665" y="115" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_dig_di" bpmnElement="a_dig"><dc:Bounds x="835" y="265" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_os_di" bpmnElement="a_os"><dc:Bounds x="1005" y="415" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_anota_di" bpmnElement="a_anota"><dc:Bounds x="1175" y="265" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_fim_di" bpmnElement="a_fim"><dc:Bounds x="1392" y="137" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="a_ini_a_msg_di" bpmnElement="a_ini_a_msg"><di:waypoint x="238" y="155" /><di:waypoint x="325" y="155" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_msg_a_ler_di" bpmnElement="a_msg_a_ler"><di:waypoint x="455" y="155" /><di:waypoint x="475" y="155" /><di:waypoint x="475" y="305" /><di:waypoint x="495" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_ler_a_gw_di" bpmnElement="a_ler_a_gw"><di:waypoint x="625" y="305" /><di:waypoint x="705" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_gw_a_dig_di" bpmnElement="a_gw_a_dig"><di:waypoint x="755" y="305" /><di:waypoint x="835" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_gw_a_resp_di" bpmnElement="a_gw_a_resp"><di:waypoint x="730" y="330" /><di:waypoint x="730" y="355" /><di:waypoint x="730" y="355" /><di:waypoint x="730" y="195" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_resp_a_ler_di" bpmnElement="a_resp_a_ler"><di:waypoint x="665" y="155" /><di:waypoint x="560" y="155" /><di:waypoint x="560" y="265" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_dig_a_os_di" bpmnElement="a_dig_a_os"><di:waypoint x="965" y="305" /><di:waypoint x="985" y="305" /><di:waypoint x="985" y="455" /><di:waypoint x="1005" y="455" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_os_a_anota_di" bpmnElement="a_os_a_anota"><di:waypoint x="1135" y="455" /><di:waypoint x="1155" y="455" /><di:waypoint x="1155" y="305" /><di:waypoint x="1175" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="a_anota_a_fim_di" bpmnElement="a_anota_a_fim"><di:waypoint x="1305" y="305" /><di:waypoint x="1348" y="305" /><di:waypoint x="1348" y="155" /><di:waypoint x="1392" y="155" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

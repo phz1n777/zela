@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="defs_to_be" targetNamespace="https://github.com/zela/bpmn" exporter="gerar_bpmn.py" exporterVersion="1">
+  <bpmn:collaboration id="colab">
+    <bpmn:participant id="pool" name="To-Be: relato pelo Zela com encaminhamento por robô" processRef="proc_to_be" />
+  </bpmn:collaboration>
+  <bpmn:process id="proc_to_be" name="To-Be: relato pelo Zela com encaminhamento por robô" isExecutable="false">
+    <bpmn:laneSet id="lanes"><bpmn:lane id="lane_0" name="Cidadão"><bpmn:flowNodeRef>t_ini</bpmn:flowNodeRef><bpmn:flowNodeRef>t_env</bpmn:flowNodeRef><bpmn:flowNodeRef>t_conf</bpmn:flowNodeRef><bpmn:flowNodeRef>t_fim</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="lane_1" name="Zela (app + API)"><bpmn:flowNodeRef>t_cv</bpmn:flowNodeRef><bpmn:flowNodeRef>t_fila</bpmn:flowNodeRef><bpmn:flowNodeRef>t_enc</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="lane_2" name="Equipe de triagem"><bpmn:flowNodeRef>t_tri</bpmn:flowNodeRef><bpmn:flowNodeRef>t_gw</bpmn:flowNodeRef><bpmn:flowNodeRef>t_desc</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="lane_3" name="Robô UiPath"><bpmn:flowNodeRef>t_tim</bpmn:flowNodeRef><bpmn:flowNodeRef>t_get</bpmn:flowNodeRef><bpmn:flowNodeRef>t_form</bpmn:flowNodeRef><bpmn:flowNodeRef>t_patch</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="lane_4" name="Portal de manutenção"><bpmn:flowNodeRef>t_os</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet>
+    <bpmn:startEvent id="t_ini" name="Vê um dano na via e lê o QR"><bpmn:outgoing>t_ini_t_env</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="t_env" name="Envia foto e local pelo app"><bpmn:incoming>t_ini_t_env</bpmn:incoming><bpmn:outgoing>t_env_t_cv</bpmn:outgoing></bpmn:task>
+    <bpmn:serviceTask id="t_cv" name="Visão sugere dano na pista, gera protocolo"><bpmn:incoming>t_env_t_cv</bpmn:incoming><bpmn:outgoing>t_cv_t_conf</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:task id="t_conf" name="Confirma ou corrige a categoria"><bpmn:incoming>t_cv_t_conf</bpmn:incoming><bpmn:outgoing>t_conf_t_fila</bpmn:outgoing></bpmn:task>
+    <bpmn:serviceTask id="t_fila" name="Relato fica como recebido"><bpmn:incoming>t_conf_t_fila</bpmn:incoming><bpmn:outgoing>t_fila_t_tri</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:userTask id="t_tri" name="Revisa foto, local e categoria no painel"><bpmn:incoming>t_fila_t_tri</bpmn:incoming><bpmn:outgoing>t_tri_t_gw</bpmn:outgoing></bpmn:userTask>
+    <bpmn:exclusiveGateway id="t_gw" name="Relato válido?"><bpmn:incoming>t_tri_t_gw</bpmn:incoming><bpmn:outgoing>t_gw_t_desc</bpmn:outgoing><bpmn:outgoing>t_gw_t_tim</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:endEvent id="t_desc" name="Descartado (duplicado, fora do território)"><bpmn:incoming>t_gw_t_desc</bpmn:incoming></bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="t_tim" name="A cada 15 min"><bpmn:incoming>t_gw_t_tim</bpmn:incoming><bpmn:outgoing>t_tim_t_get</bpmn:outgoing><bpmn:timerEventDefinition id="t_tim_def"><bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/PT15M</bpmn:timeCycle></bpmn:timerEventDefinition></bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="t_get" name="Lê GET /robo/reports em triagem"><bpmn:incoming>t_tim_t_get</bpmn:incoming><bpmn:outgoing>t_get_t_form</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:serviceTask id="t_form" name="Preenche formulário e anexa a foto"><bpmn:incoming>t_get_t_form</bpmn:incoming><bpmn:outgoing>t_form_t_os</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:serviceTask id="t_os" name="Gera número da ordem de serviço"><bpmn:incoming>t_form_t_os</bpmn:incoming><bpmn:outgoing>t_os_t_patch</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:serviceTask id="t_patch" name="Grava OS via PATCH /robo/reports/{id}/service-order"><bpmn:incoming>t_os_t_patch</bpmn:incoming><bpmn:outgoing>t_patch_t_enc</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:serviceTask id="t_enc" name="Status vira encaminhado"><bpmn:incoming>t_patch_t_enc</bpmn:incoming><bpmn:outgoing>t_enc_t_fim</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:endEvent id="t_fim" name="Cidadão vê 'Encaminhado' pelo protocolo"><bpmn:incoming>t_enc_t_fim</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="t_ini_t_env" sourceRef="t_ini" targetRef="t_env" />
+    <bpmn:sequenceFlow id="t_env_t_cv" sourceRef="t_env" targetRef="t_cv" />
+    <bpmn:sequenceFlow id="t_cv_t_conf" sourceRef="t_cv" targetRef="t_conf" />
+    <bpmn:sequenceFlow id="t_conf_t_fila" sourceRef="t_conf" targetRef="t_fila" />
+    <bpmn:sequenceFlow id="t_fila_t_tri" sourceRef="t_fila" targetRef="t_tri" />
+    <bpmn:sequenceFlow id="t_tri_t_gw" sourceRef="t_tri" targetRef="t_gw" />
+    <bpmn:sequenceFlow id="t_gw_t_desc" name="não" sourceRef="t_gw" targetRef="t_desc" />
+    <bpmn:sequenceFlow id="t_gw_t_tim" name="sim: em_triagem" sourceRef="t_gw" targetRef="t_tim" />
+    <bpmn:sequenceFlow id="t_tim_t_get" sourceRef="t_tim" targetRef="t_get" />
+    <bpmn:sequenceFlow id="t_get_t_form" sourceRef="t_get" targetRef="t_form" />
+    <bpmn:sequenceFlow id="t_form_t_os" sourceRef="t_form" targetRef="t_os" />
+    <bpmn:sequenceFlow id="t_os_t_patch" sourceRef="t_os" targetRef="t_patch" />
+    <bpmn:sequenceFlow id="t_patch_t_enc" sourceRef="t_patch" targetRef="t_enc" />
+    <bpmn:sequenceFlow id="t_enc_t_fim" sourceRef="t_enc" targetRef="t_fim" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="diagrama">
+    <bpmndi:BPMNPlane id="plano" bpmnElement="colab">
+      <bpmndi:BPMNShape id="pool_di" bpmnElement="pool" isHorizontal="true"><dc:Bounds x="120" y="80" width="2430" height="750" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_0_di" bpmnElement="lane_0" isHorizontal="true"><dc:Bounds x="150" y="80" width="2400" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_1_di" bpmnElement="lane_1" isHorizontal="true"><dc:Bounds x="150" y="230" width="2400" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_2_di" bpmnElement="lane_2" isHorizontal="true"><dc:Bounds x="150" y="380" width="2400" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_3_di" bpmnElement="lane_3" isHorizontal="true"><dc:Bounds x="150" y="530" width="2400" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_4_di" bpmnElement="lane_4" isHorizontal="true"><dc:Bounds x="150" y="680" width="2400" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_ini_di" bpmnElement="t_ini"><dc:Bounds x="202" y="137" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_env_di" bpmnElement="t_env"><dc:Bounds x="325" y="115" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_cv_di" bpmnElement="t_cv"><dc:Bounds x="495" y="265" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_conf_di" bpmnElement="t_conf"><dc:Bounds x="665" y="115" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_fila_di" bpmnElement="t_fila"><dc:Bounds x="835" y="265" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_tri_di" bpmnElement="t_tri"><dc:Bounds x="1005" y="415" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_gw_di" bpmnElement="t_gw" isMarkerVisible="true"><dc:Bounds x="1215" y="430" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_desc_di" bpmnElement="t_desc"><dc:Bounds x="1392" y="437" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_tim_di" bpmnElement="t_tim"><dc:Bounds x="1392" y="587" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_get_di" bpmnElement="t_get"><dc:Bounds x="1515" y="565" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_form_di" bpmnElement="t_form"><dc:Bounds x="1685" y="565" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_os_di" bpmnElement="t_os"><dc:Bounds x="1855" y="715" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_patch_di" bpmnElement="t_patch"><dc:Bounds x="2025" y="565" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_enc_di" bpmnElement="t_enc"><dc:Bounds x="2195" y="265" width="130" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="t_fim_di" bpmnElement="t_fim"><dc:Bounds x="2412" y="137" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="t_ini_t_env_di" bpmnElement="t_ini_t_env"><di:waypoint x="238" y="155" /><di:waypoint x="325" y="155" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_env_t_cv_di" bpmnElement="t_env_t_cv"><di:waypoint x="455" y="155" /><di:waypoint x="475" y="155" /><di:waypoint x="475" y="305" /><di:waypoint x="495" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_cv_t_conf_di" bpmnElement="t_cv_t_conf"><di:waypoint x="625" y="305" /><di:waypoint x="645" y="305" /><di:waypoint x="645" y="155" /><di:waypoint x="665" y="155" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_conf_t_fila_di" bpmnElement="t_conf_t_fila"><di:waypoint x="795" y="155" /><di:waypoint x="815" y="155" /><di:waypoint x="815" y="305" /><di:waypoint x="835" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_fila_t_tri_di" bpmnElement="t_fila_t_tri"><di:waypoint x="965" y="305" /><di:waypoint x="985" y="305" /><di:waypoint x="985" y="455" /><di:waypoint x="1005" y="455" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_tri_t_gw_di" bpmnElement="t_tri_t_gw"><di:waypoint x="1135" y="455" /><di:waypoint x="1215" y="455" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_gw_t_desc_di" bpmnElement="t_gw_t_desc"><di:waypoint x="1265" y="455" /><di:waypoint x="1392" y="455" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_gw_t_tim_di" bpmnElement="t_gw_t_tim"><di:waypoint x="1265" y="455" /><di:waypoint x="1328" y="455" /><di:waypoint x="1328" y="605" /><di:waypoint x="1392" y="605" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_tim_t_get_di" bpmnElement="t_tim_t_get"><di:waypoint x="1428" y="605" /><di:waypoint x="1515" y="605" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_get_t_form_di" bpmnElement="t_get_t_form"><di:waypoint x="1645" y="605" /><di:waypoint x="1685" y="605" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_form_t_os_di" bpmnElement="t_form_t_os"><di:waypoint x="1815" y="605" /><di:waypoint x="1835" y="605" /><di:waypoint x="1835" y="755" /><di:waypoint x="1855" y="755" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_os_t_patch_di" bpmnElement="t_os_t_patch"><di:waypoint x="1985" y="755" /><di:waypoint x="2005" y="755" /><di:waypoint x="2005" y="605" /><di:waypoint x="2025" y="605" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_patch_t_enc_di" bpmnElement="t_patch_t_enc"><di:waypoint x="2155" y="605" /><di:waypoint x="2175" y="605" /><di:waypoint x="2175" y="305" /><di:waypoint x="2195" y="305" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="t_enc_t_fim_di" bpmnElement="t_enc_t_fim"><di:waypoint x="2325" y="305" /><di:waypoint x="2368" y="305" /><di:waypoint x="2368" y="155" /><di:waypoint x="2412" y="155" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

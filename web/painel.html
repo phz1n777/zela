@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zela: painel de ocorrências</title>
+  <meta name="description" content="Painel de triagem das ocorrências do piloto Zela.">
+  <meta name="theme-color" content="#0b5d4b">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icone.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/estilo.css">
+  <script type="module" src="/painel.js"></script>
+</head>
+<body>
+  <a class="pular" href="#principal">Pular para o conteúdo</a>
+  <header class="topo">
+    <div class="conteudo largo">
+      <a href="/">Zela</a>
+      <nav aria-label="Principal"><a href="/">Fazer um relato</a></nav>
+    </div>
+  </header>
+
+  <main id="principal" class="conteudo largo">
+    <h1>Painel de ocorrências</h1>
+    <p class="lead">Lista de relatos do território piloto. Os registros marcados como <span class="selo demo">demonstração</span> são simulados.</p>
+
+    <section class="cartao" aria-labelledby="t-resumo">
+      <h2 id="t-resumo">Resumo</h2>
+      <ul class="resumo" id="resumo"></ul>
+    </section>
+
+    <section class="cartao" aria-labelledby="t-triagem">
+      <h2 id="t-triagem">Triagem</h2>
+      <p class="dica">Para mudar o status, informe o token da equipe de triagem. Ele fica só nesta aba e some ao fechá-la.</p>
+      <form id="form-token" class="filtros">
+        <div class="campo">
+          <label for="token">Token de operador</label>
+          <input id="token" type="password" autocomplete="off">
+        </div>
+        <button type="submit" class="botao secundario" id="salvar-token">Usar token</button>
+      </form>
+      <p id="estado-token" class="dica" role="status"></p>
+    </section>
+
+    <section aria-labelledby="t-lista">
+      <h2 id="t-lista">Relatos</h2>
+      <form id="filtros" class="filtros cartao">
+        <div class="campo">
+          <label for="f-status">Status</label>
+          <select id="f-status"><option value="">Todos</option></select>
+        </div>
+        <div class="campo">
+          <label for="f-categoria">Categoria</label>
+          <select id="f-categoria"><option value="">Todas</option></select>
+        </div>
+        <div class="campo">
+          <label for="f-origem">Origem</label>
+          <select id="f-origem">
+            <option value="">Todas</option>
+            <option value="cidadao">Cidadão</option>
+            <option value="demo">Demonstração</option>
+          </select>
+        </div>
+        <button type="submit" class="botao">Atualizar</button>
+      </form>
+      <p id="estado-lista" role="status" class="dica"></p>
+      <ul class="lista-relatos" id="lista"></ul>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="conteudo largo">Zela: protótipo acadêmico da Global Solution 2026.2 (FIAP), fase piloto. A classificação apoia a triagem e não substitui a avaliação humana.</div>
+  </footer>
+</body>
+</html>
