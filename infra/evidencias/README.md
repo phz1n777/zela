@@ -12,6 +12,10 @@ As ferramentas de segurança foram executadas em 2026-11-11, na máquina do dese
 | `testes` | pytest | testes passando (contagem e versões no arquivo) | [testes.txt](testes.txt) |
 | `terraform` | `terraform validate` | configuração válida | [terraform_validate.txt](terraform_validate.txt) |
 
+## Execução no GitHub Actions (runner próprio)
+
+Execução [43093596676](https://github.com/phz1n777/zela/actions/runs/43093596676), commit `52c4321`: os 6 jobs (`testes`, `gitleaks`, `semgrep`, `terraform`, `imagem` e `deploy`) terminaram em sucesso, e o Container App passou a rodar `zela-api:52c4321e5445`. O runner é próprio porque os runners hospedados da conta estão bloqueados por cobrança. Execuções anteriores falharam por defeitos do workflow, corrigidos no caminho.
+
 ## Observabilidade e alerta (em produção)
 
 | Evidência | O que mostra | Arquivo |

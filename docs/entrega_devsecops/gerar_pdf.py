@@ -103,7 +103,7 @@ svg { width: 100%; height: auto; }
 <tr><th>Documentos</th><td><a href="{BLOB}/docs/arquitetura.md">arquitetura</a> · <a href="{BLOB}/docs/custos_e_lgpd.md">custos e LGPD</a> · <a href="{BLOB}/infra/evidencias/README.md">evidências</a> · <a href="{BLOB}/docs/ficha_tecnica.md">ficha técnica</a></td></tr>
 </table>
 
-<div class="aviso"><b>Transparência sobre o pipeline.</b> O GitHub Actions da conta do repositório está bloqueado por um problema de cobrança do GitHub ("account is locked due to a billing issue"), e os jobs não chegam a executar. O workflow está no repositório. Todas as verificações dele foram rodadas localmente com as mesmas ferramentas e estão documentadas na seção 2. O job de deploy também depende de um acesso OIDC ao Azure ainda não criado, então a publicação foi feita manualmente com os mesmos passos do job.</div>
+<div class="aviso"><b>Transparência sobre o pipeline.</b> Os runners hospedados do GitHub Actions estão bloqueados na conta do repositório por um problema de cobrança do GitHub ("account is locked due to a billing issue"). O pipeline roda num <b>runner próprio</b>, registrado no repositório e executado no computador do desenvolvedor. Na execução <a href="{REPO}/actions/runs/43093596676">43093596676</a> (commit 52c4321) os 6 jobs terminaram em sucesso, inclusive o deploy. A seção 9 lista as limitações conhecidas.</div>
 
 <h2>1. Arquitetura</h2>
 {DIAGRAMA}
@@ -129,16 +129,19 @@ svg { width: 100%; height: auto; }
 </table>
 
 <h2>3. Pipeline DevSecOps</h2>
-<p>Workflow: <a href="{BLOB}/.github/workflows/ci.yml">.github/workflows/ci.yml</a>, com 6 jobs: <code>testes</code>, <code>gitleaks</code>, <code>semgrep</code>, <code>terraform</code>, <code>imagem</code> (Trivy) e <code>deploy</code>. Os identificadores do Azure usados no deploy ficam em GitHub Secrets (<code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_SUBSCRIPTION_ID</code>), sem senha.</p>
-<h3>Resultado das verificações (executadas localmente em 11/11/2026)</h3>
+<p>Workflow: <a href="{BLOB}/.github/workflows/ci.yml">.github/workflows/ci.yml</a>, com 6 jobs: <code>testes</code>, <code>gitleaks</code>, <code>semgrep</code>, <code>terraform</code>, <code>imagem</code> (Trivy) e <code>deploy</code>. Roda a cada push e pull request, e o <code>deploy</code> só na <code>main</code>, depois de todos os outros. O runner é escolhido pela variável do repositório <code>RUNNER_LABEL</code> (hoje <code>zela-local</code>). O login no Azure é por OIDC, com os identificadores em GitHub Secrets (<code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_SUBSCRIPTION_ID</code>) e sem senha guardada.</p>
+<h3>Resultado no GitHub Actions</h3>
+<p>Execução <a href="{REPO}/actions/runs/43093596676">43093596676</a>, commit <code>52c4321</code>, em runner próprio:</p>
 <table>
 <tr><th>Job</th><th>Ferramenta</th><th>Resultado</th></tr>
-<tr><td>gitleaks</td><td>Gitleaks, histórico git inteiro</td><td class="ok">nenhum segredo</td></tr>
-<tr><td>semgrep</td><td>Semgrep 1.97.0, regras <code>p/python</code> e <code>p/dockerfile</code></td><td class="ok">158 regras, 0 achados</td></tr>
-<tr><td>imagem</td><td>Trivy, HIGH e CRITICAL com correção</td><td class="ok">0 vulnerabilidades (saída 0)</td></tr>
-<tr><td>testes</td><td>pytest</td><td class="ok">30 testes passando</td></tr>
-<tr><td>terraform</td><td><code>terraform validate</code> e <code>fmt</code></td><td class="ok">configuração válida</td></tr>
+<tr><td>testes</td><td>pytest (dentro de <code>api/</code>)</td><td class="ok">sucesso (30 testes localmente)</td></tr>
+<tr><td>gitleaks</td><td>Gitleaks 8.30.1, histórico git inteiro</td><td class="ok">sucesso, nenhum segredo</td></tr>
+<tr><td>semgrep</td><td>Semgrep 1.97.0, regras <code>p/python</code> e <code>p/dockerfile</code></td><td class="ok">sucesso (158 regras, 0 achados localmente)</td></tr>
+<tr><td>terraform</td><td><code>terraform validate</code> e <code>fmt</code></td><td class="ok">sucesso</td></tr>
+<tr><td>imagem</td><td>Trivy 0.76.2, HIGH e CRITICAL com correção</td><td class="ok">sucesso (0 vulnerabilidades)</td></tr>
+<tr><td>deploy</td><td>OIDC, build, push no ACR, atualização do Container App, teste de fumaça</td><td class="ok">sucesso: imagem <code>zela-api:52c4321e5445</code> no ar</td></tr>
 </table>
+<p class="nota">Até chegar aqui foram três execuções com falha, todas por defeitos do próprio workflow e não por achados de segurança: o <code>pytest</code> rodava fora de <code>api/</code>; a action do Gitleaks quebrava no envio do relatório e varria só 1 commit; a versão da action do Trivy não existia; e a credencial OIDC usava o formato antigo do <em>subject</em> (o GitHub agora inclui os IDs numéricos do dono e do repositório). Foram corrigidos com Gitleaks e Trivy por Docker e uma segunda credencial federada. Os testes, o Semgrep e o <code>terraform validate</code> também foram rodados localmente em 11/11/2026.</p>
 <h3>Uma execução barrada e a corrigida</h3>
 <p>A primeira varredura do Trivy <b>reprovou</b> a imagem (commit <a href="{REPO}/commit/0855ed2">0855ed2</a>) com 7 achados HIGH corrigíveis:</p>
 <table>
@@ -147,7 +150,7 @@ svg { width: 100%; height: auto; }
 <tr><td>Sistema (Debian 13)</td><td><code>zlib1g</code> (CVE-2026-76844, CVE-2026-85091)</td><td>zlib <code>1.3.dfsg+really1.3.1-1+deb13u1</code></td></tr>
 <tr><td>Python</td><td><code>starlette</code> 0.46.2 (CVE-2025-62727, CVE-2026-48818, CVE-2026-54283)</td><td>FastAPI 0.162 e Starlette 1.3.1 ou superior (instalado: 1.10)</td></tr>
 </table>
-<p>O commit <a href="{REPO}/commit/c8fc16d">c8fc16d</a> corrigiu os 7 achados, e o Trivy passou a sair com código 0. As duas execuções foram feitas localmente. Saída das ferramentas em <a href="{BLOB}/infra/evidencias/README.md">infra/evidencias/</a>. Quando o bloqueio de cobrança for resolvido, as execuções do workflow nesses dois commits podem ser repetidas no GitHub.</p>
+<p>O commit <a href="{REPO}/commit/c8fc16d">c8fc16d</a> corrigiu os 7 achados, e o Trivy passou a sair com código 0. Essa reprovação e a correção foram verificadas <b>localmente</b>, antes de o pipeline rodar no GitHub, então a evidência de "barrada e corrigida" não é uma execução do Actions. Saída das ferramentas em <a href="{BLOB}/infra/evidencias/README.md">infra/evidencias/</a>.</p>
 
 <h2>4. Observabilidade</h2>
 <p>O Prometheus lê o <code>/metrics</code> do MVP publicado no Azure e o Grafana mostra o painel <b>Zela: 4 sinais de ouro</b>. A imagem abaixo é do painel lendo a API em produção, com tráfego e erros provocados de propósito.</p>
@@ -208,6 +211,32 @@ PROM_CONFIG=prometheus-azure.yml docker compose -f docker-compose.monitoring.yml
 cd infra/terraform &amp;&amp; cp terraform.tfvars.example terraform.tfvars
 terraform init &amp;&amp; terraform plan -out tf.plan &amp;&amp; terraform apply tf.plan</pre>
 <p class="nota">README completo em <a href="{BLOB}/infra/README.md">infra/README.md</a>, com o passo a passo do deploy e da configuração do acesso OIDC.</p>
+
+<h2>9. Limitações conhecidas</h2>
+<h3>Pipeline e entrega</h3>
+<ul>
+<li><b>Sem runner hospedado do GitHub.</b> A cobrança da conta está bloqueada, então o pipeline depende de um runner no computador do desenvolvedor, que precisa estar ligado. Um runner próprio em repositório público é um risco (um pull request malicioso executaria código na máquina). Mitigação: PRs de contribuidores externos exigem aprovação manual, e o runner deve ser removido depois da correção.</li>
+<li><b>"Barrada e corrigida" não é uma execução do Actions.</b> A reprovação do Trivy e a correção foram verificadas localmente.</li>
+<li><b>O Terraform não é aplicado pelo pipeline.</b> O CI só roda <code>validate</code> e <code>fmt</code>; o <code>apply</code> é manual, e o state fica na máquina do desenvolvedor (com a senha do banco).</li>
+<li><b>Escopo das verificações.</b> O <code>test_vision.py</code> fica fora do CI, o Trivy varre só vulnerabilidades (não configuração) e o Semgrep usa regras da comunidade. O teste de fumaça do deploy confere apenas o <code>/health</code>.</li>
+<li><b>O deploy automático foi validado em uma execução.</b> O acesso OIDC tem papel Contributor restrito ao grupo de recursos do Zela.</li>
+</ul>
+<h3>Observabilidade</h3>
+<ul>
+<li><b>Prometheus e Grafana rodam localmente</b>, apontando para o MVP no Azure. Não há dashboard hospedado nem Application Insights, e as regras do Prometheus não notificam ninguém (não há Alertmanager). Quem avisa a equipe é o alerta do Azure Monitor.</li>
+<li><b>O e-mail do alerta não foi confirmado.</b> O alerta entrou em <code>Fired</code>, mas não foi verificado se a mensagem chegou à caixa de entrada.</li>
+<li>O Grafana local usa a senha padrão <code>admin</code>, adequada só para uso local.</li>
+</ul>
+<h3>Produto, dados e infraestrutura</h3>
+<ul>
+<li><b>Sem sugestão de dano pela IA em produção.</b> A imagem publicada roda sem o YOLO (o modelo ainda não foi treinado), então o relato não recebe a sugestão automática.</li>
+<li><b>Leitura pública da API</b> (listagem, relato e foto), <b>sem rota de exclusão nem prazo de retenção</b>, e texto livre sem filtro de dados pessoais. Detalhes na seção 6.</li>
+<li><b>Fotos em disco efêmero:</b> somem a cada novo deploy do contêiner.</li>
+<li><b>Banco sem rede privada:</b> aceita apenas a regra "serviços do Azure", com TLS e senha. Para produção, o certo é rede virtual e endpoint privado. O <code>/metrics</code> também é público.</li>
+<li><b>Região imposta pela assinatura:</b> <code>spaincentral</code> é uma das poucas permitidas, o que implica transferência internacional de dados.</li>
+<li><b>Custo estimado, não medido</b> (US$ 30 a 60 por mês). O ambiente precisa ficar no ar durante a correção, e o crédito de estudante limita o orçamento.</li>
+<li>Instância única e sem alta disponibilidade, adequada a um piloto.</li>
+</ul>
 </body></html>
 """
 
