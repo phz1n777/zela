@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: zela
+    folder: Zela
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

@@ -6,9 +6,11 @@ Dockerfile em `api/` (usuário não-root). Nuvem: **Azure Container Apps + Postg
 
 | Caminho | O que é |
 | --- | --- |
-| `terraform/` | Resource group, ACR, Postgres B1ms, Container App (HTTPS público), Log Analytics, alerta de 5xx por e-mail |
-| `monitoring/` + `../docker-compose.monitoring.yml` | Prometheus lendo `/metrics`, com alertas `ZelaErros5xx` e `ZelaLatenciaAlta` (uso local) |
-| `../.github/workflows/ci.yml` | Testes, Gitleaks, Semgrep, `terraform validate` e Trivy na imagem |
+| `terraform/` | Resource group, ACR, Postgres B1ms, Container App (HTTPS público), Log Analytics, alerta de 5xx por e-mail (consulta nos logs) |
+| `monitoring/` + `../docker-compose.monitoring.yml` | Prometheus e Grafana locais (painel "Zela: 4 sinais de ouro"), contra a stack local ou o MVP no Azure. Alertas `ZelaErros5xx` e `ZelaLatenciaAlta` |
+| `../.github/workflows/ci.yml` | Testes, Gitleaks, Semgrep, `terraform validate`, Trivy na imagem e deploy automático na `main` |
+| `evidencias/` | Saída das ferramentas de segurança rodadas localmente |
+| [`../docs/arquitetura.md`](../docs/arquitetura.md) | Diagrama, fluxo de entrega e responsabilidade compartilhada |
 
 ## Perfil Azure da faculdade
 
@@ -41,4 +43,32 @@ docker push $ACR/zela-api:latest
 - **Banco**: o acesso público fica restrito à regra "serviços do Azure" (0.0.0.0 a 0.0.0.0, não é a internet), com senha e TLS. Nenhuma porta administrativa aberta para `0.0.0.0/0`. Melhoria futura: VNet e endpoint privado.
 - **Fotos**: o disco do Container App é efêmero, então as fotos somem a cada nova revisão. Para o piloto, montar Azure Files.
 - **`/metrics` público**: expõe contadores agregados, sem dados pessoais. Restringir antes de produção.
-- **Custo e LGPD**: ver [`docs/custos_e_lgpd.md`](../docs/custos_e_lgpd.md). Estimativa de US$ 30 a 60 por mês; `terraform destroy` após a entrega.
+- **Custo e LGPD**: ver [`docs/custos_e_lgpd.md`](../docs/custos_e_lgpd.md). Estimativa de US$ 30 a 60 por mês; `terraform destroy` só depois da correção (até cerca de 26/11), pois os links precisam funcionar durante ela.
+
+## Observabilidade
+
+```bash
+# Contra o MVP publicado no Azure (não precisa subir a API local)
+PROM_CONFIG=prometheus-azure.yml docker compose -f docker-compose.monitoring.yml up prometheus grafana
+```
+
+Grafana em http://localhost:3000 (usuário `admin`, senha `admin` só para uso local) com o painel **Zela: 4 sinais de ouro**: latência (p50 e p95), tráfego, erros (% de 5xx) e saturação (CPU e memória). O alerta em produção é do Azure Monitor: uma consulta nos logs do Container App que avisa por e-mail quando passa de 5 respostas 5xx em 5 minutos.
+
+## Deploy automático (uma vez, para ligar o job `deploy`)
+
+O job `deploy` do workflow entra no Azure por OIDC, sem guardar senha. Precisa de um registro de aplicativo com credencial federada ao repositório e de 3 *secrets* no GitHub. Use sempre o perfil da faculdade (`AZURE_CONFIG_DIR=$HOME/.azure-fiap`):
+
+```bash
+APP=$(az ad app create --display-name zela-github-deploy --query appId -o tsv)
+az ad sp create --id "$APP"
+SUB=$(az account show --query id -o tsv)
+az role assignment create --assignee "$APP" --role Contributor \
+  --scope "/subscriptions/$SUB/resourceGroups/rg-zela-uylmp"
+az ad app federated-credential create --id "$APP" --parameters '{
+  "name": "github-main", "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:phz1n777/zela:ref:refs/heads/main", "audiences": ["api://AzureADTokenExchange"]}'
+```
+
+Depois, em *Settings → Secrets and variables → Actions* do repositório, crie `AZURE_CLIENT_ID` (o `$APP`), `AZURE_TENANT_ID` (`az account show --query tenantId`) e `AZURE_SUBSCRIPTION_ID`. O papel fica restrito ao grupo de recursos do Zela. Em assinaturas de estudante, o locatário pode bloquear o registro de aplicativos; nesse caso o deploy continua manual (seção Deploy acima).
+
+O Terraform ignora a imagem do Container App (`ignore_changes`), para não reverter o que o pipeline publicar.

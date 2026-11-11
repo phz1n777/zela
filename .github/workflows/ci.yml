@@ -8,6 +8,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Nomes públicos dos recursos (sem segredo). Os identificadores de login ficam em GitHub Secrets.
+  ACR_NAME: zelaacruylmp
+  RESOURCE_GROUP: rg-zela-uylmp
+  CONTAINER_APP: ca-zela-uylmp
+
 jobs:
   testes:
     runs-on: ubuntu-latest
@@ -61,3 +71,37 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: "1"
+
+  deploy:
+    # Só a main publica, e só depois de testes, segredos, SAST, Terraform e Trivy passarem.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [testes, gitleaks, semgrep, terraform, imagem]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # login OIDC no Azure, sem senha guardada
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Build e push da imagem
+        run: |
+          az acr login --name "$ACR_NAME"
+          IMAGE="$ACR_NAME.azurecr.io/zela-api:${GITHUB_SHA::12}"
+          docker build -f api/Dockerfile -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+      - name: Atualiza o Container App
+        run: az containerapp update -n "$CONTAINER_APP" -g "$RESOURCE_GROUP" --image "$IMAGE"
+      - name: Teste de fumaça
+        run: |
+          URL="https://$(az containerapp show -n "$CONTAINER_APP" -g "$RESOURCE_GROUP" --query properties.configuration.ingress.fqdn -o tsv)"
+          for i in $(seq 1 12); do
+            if curl -fsS --max-time 10 "$URL/health" | grep -q '"ok"'; then echo "no ar: $URL"; exit 0; fi
+            sleep 10
+          done
+          echo "a API não respondeu depois do deploy" >&2
+          exit 1

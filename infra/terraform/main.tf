@@ -189,6 +189,11 @@ resource "azurerm_container_app" "api" {
     }
   }
 
+  # A imagem é publicada pelo pipeline (CD) a cada push na main; o Terraform não a reverte.
+  lifecycle {
+    ignore_changes = [template[0].container[0].image]
+  }
+
   depends_on = [azurerm_role_assignment.acr_pull]
 }
 
@@ -204,32 +209,39 @@ resource "azurerm_monitor_action_group" "email" {
   }
 }
 
-# Dispara quando a API devolve respostas 5xx.
-resource "azurerm_monitor_metric_alert" "erros_5xx" {
-  name                = "zela-erros-5xx"
-  resource_group_name = azurerm_resource_group.rg.name
-  scopes              = [azurerm_container_app.api.id]
-  description         = "Mais de 5 respostas 5xx em 5 minutos."
-  severity            = 2
-  frequency           = "PT1M"
-  window_size         = "PT5M"
+# Dispara quando a API devolve respostas 5xx. É um alerta sobre os logs (Log Analytics),
+# porque a métrica Requests do Container Apps não entrega a divisão por categoria de status.
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "erros_5xx" {
+  name                 = "zela-erros-5xx"
+  resource_group_name  = azurerm_resource_group.rg.name
+  location             = azurerm_resource_group.rg.location
+  description          = "Mais de 5 respostas HTTP 5xx em 5 minutos."
+  severity             = 2
+  enabled              = true
+  evaluation_frequency = "PT1M"
+  window_duration      = "PT5M"
+  scopes               = [azurerm_log_analytics_workspace.logs.id]
+  tags                 = local.tags
 
   criteria {
-    metric_namespace = "Microsoft.App/containerApps"
-    metric_name      = "Requests"
-    aggregation      = "Total"
-    operator         = "GreaterThan"
-    threshold        = 5
+    query                   = <<-KQL
+      ContainerAppConsoleLogs_CL
+      | where ContainerAppName_s == "${azurerm_container_app.api.name}"
+      | where Log_s matches regex @'" 5[0-9][0-9] '
+    KQL
+    time_aggregation_method = "Count"
+    operator                = "GreaterThan"
+    threshold               = 5
 
-    dimension {
-      name     = "StatusCodeCategory"
-      operator = "Include"
-      values   = ["5xx"]
+    failing_periods {
+      minimum_failing_periods_to_trigger_alert = 1
+      number_of_evaluation_periods             = 1
     }
   }
 
+  auto_mitigation_enabled = true
+
   action {
-    action_group_id = azurerm_monitor_action_group.email.id
+    action_groups = [azurerm_monitor_action_group.email.id]
   }
-  tags = local.tags
 }

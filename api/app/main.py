@@ -63,14 +63,22 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="Zela API", version="0.2.0", lifespan=lifespan)
 
 
+def _registrar(request: Request, status: int, inicio: float) -> None:
+    caminho = getattr(request.scope.get("route"), "path", "desconhecida")
+    LATENCIA.labels(caminho).observe(time.perf_counter() - inicio)
+    REQUISICOES.labels(request.method, caminho, status).inc()
+
+
 @app.middleware("http")
 async def medir(request: Request, call_next):
     inicio = time.perf_counter()
-    resposta = await call_next(request)
-    rota = request.scope.get("route")
-    caminho = getattr(rota, "path", "desconhecida")
-    LATENCIA.labels(caminho).observe(time.perf_counter() - inicio)
-    REQUISICOES.labels(request.method, caminho, resposta.status_code).inc()
+    try:
+        resposta = await call_next(request)
+    except Exception:
+        # Erro não tratado vira 500 para o cliente: conta como erro nas métricas antes de seguir.
+        _registrar(request, 500, inicio)
+        raise
+    _registrar(request, resposta.status_code, inicio)
     for nome, valor in CABECALHOS_SEGURANCA.items():
         resposta.headers.setdefault(nome, valor)
     return resposta

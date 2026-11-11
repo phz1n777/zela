@@ -1,9 +1,31 @@
-# Uso local: docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up
+# Prometheus e Grafana locais.
+#
+# Contra a stack local (docker compose up):
+#   docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up
+# Contra o MVP publicado no Azure (sem subir a API local):
+#   PROM_CONFIG=prometheus-azure.yml docker compose -f docker-compose.monitoring.yml up prometheus grafana
+#
+# Grafana em http://localhost:3000 (usuário admin; a senha vem de GRAFANA_PASSWORD, padrão "admin" só para uso local).
+# Painel "Zela: 4 sinais de ouro" na pasta Zela. Prometheus em http://localhost:9090.
 services:
   prometheus:
     image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/${PROM_CONFIG:-prometheus.yml}
     volumes:
       - ./infra/monitoring:/etc/prometheus:ro
     ports:
       - "9090:9090"
-    depends_on: [api]
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - ./infra/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on: [prometheus]

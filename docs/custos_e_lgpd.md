@@ -19,7 +19,7 @@ Documento da disciplina de Secure DevOps & Cloud. Descreve o que o Zela custa pa
 
 **Entre US$ 30 e US$ 60 por mês** com o piloto ligado o tempo todo. É uma estimativa feita a partir dos preços públicos de cada recurso, **não** um valor medido: a consulta de consumo pelo CLI não retornou dados e o saldo real deve ser conferido em *Cost Management + Billing* no portal. (Uma primeira estimativa, de US$ 25 a 30, foi otimista porque desconsiderava a réplica sempre ligada e o armazenamento do banco.)
 
-O crédito do Azure for Students (cerca de US$ 100) cobre as semanas até a entrega. Depois dela, o ambiente é **destruído**:
+O crédito do Azure for Students (cerca de US$ 100) cobre as semanas até a entrega. **Não destrua o ambiente no dia da entrega:** o briefing da GS exige links e aplicações funcionando durante a correção, que ocorre em até uma semana depois do encerramento (19/11). O ambiente deve ficar no ar até o fim da correção (cerca de 26/11) e só então ser destruído:
 
 ```bash
 cd infra/terraform && terraform destroy

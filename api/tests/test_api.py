@@ -210,3 +210,15 @@ def test_rejeita_arquivo_que_finge_ser_foto(c):
     for conteudo, tipo in ((b"nao sou imagem", "image/png"), (PNG, "image/jpeg")):
         r = c.post("/api/reports", data={"location": "Rua C, 3"}, files={"photo": ("x", conteudo, tipo)})
         assert r.status_code == 400
+
+
+def test_erro_nao_tratado_conta_como_500_nas_metricas(monkeypatch):
+    def quebrar(*_):
+        raise RuntimeError("falha simulada")
+
+    monkeypatch.setattr(main, "buscar", quebrar)
+    serie = main.REQUISICOES.labels("GET", "/api/reports/{report_id}", 500)
+    antes = serie._value.get()
+    with TestClient(app, raise_server_exceptions=False) as cliente:
+        assert cliente.get("/api/reports/1").status_code == 500
+    assert serie._value.get() == antes + 1
