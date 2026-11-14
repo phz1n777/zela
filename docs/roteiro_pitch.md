@@ -22,7 +22,7 @@ Estas três coisas mudam o que se pode mostrar. O roteiro abaixo já traz o cami
 | --- | --- | --- | --- |
 | D1 | **A IA sugere "dano na pista"?** | O MVP no ar roda **sem o modelo** (o `best.pt` ainda não foi treinado). A opção "Deixar o sistema sugerir" não devolve sugestão. | **A:** se o Joseh treinar a tempo, eu refaço a imagem com o YOLO e a demo mostra a sugestão com a confiança. **B:** sem o modelo, escolher a categoria na lista e dizer que a sugestão automática está em treino e aparece no vídeo de Visão. **Não** mostrar sugestão que não existe. |
 | D2 | **O robô UiPath faz parte da demo?** | O robô do Joseh opera o portal local dele, não o MVP no Azure. O MVP não muda de status sozinho. | Mostrar o fluxo do MVP **até "Em triagem"** e, em seguida, o corte do vídeo do robô **dizendo claramente** que ele opera o portal de demonstração. Só mostrar "Encaminhado" no painel se o robô realmente o gravar pela API. |
-| D3 | **Território piloto** | Em branco na ficha e no README. | Escolher um (campus, condomínio ou parque) e usar o mesmo nome no vídeo, no PDF e na ficha. |
+| D3 | **Território piloto** | **Decidido:** o bairro Jardim das Belezas, onde mora um dos integrantes. | Usar "bairro Jardim das Belezas" no vídeo, no PDF e na ficha. Nas fotos, nada de fachada ou número de casa à vista. |
 
 ## Os 6 blocos, com o texto sugerido
 
@@ -32,7 +32,7 @@ Os textos são rascunhos: ajustem às suas palavras e **só afirmem o que está 
 
 **Mostrar:** uma foto real de um buraco no território piloto (sem rosto e sem placa).
 
-> "Quem anda por [território piloto] a pé, de bicicleta, de carro ou de cadeira de rodas já passou por um buraco assim. O que acontece depois? O aviso vai para o WhatsApp ou para um e-mail, sem foto, sem o local exato. A administração recebe o mesmo aviso três vezes, manda a equipe ao lugar errado, e quem avisou nunca sabe se alguém viu."
+> "Quem anda pelo meu bairro a pé, de bicicleta, de carro ou de cadeira de rodas já passou por um buraco assim. O que acontece depois? O aviso vai para o WhatsApp ou para um e-mail, sem foto, sem o local exato. A administração recebe o mesmo aviso três vezes, manda a equipe ao lugar errado, e quem avisou nunca sabe se alguém viu."
 
 Se citarem dados das conversas, digam que as entrevistas foram **simuladas** (autorizadas pelo professor). Não apresentem como pesquisa real.
 
@@ -64,9 +64,9 @@ Mantenham um relógio visível: mede o tempo do relato até a triagem. **Não di
 
 **Mostrar:** o Lean Canvas de 9 blocos e a conta (do PDF de BI).
 
-> "O cidadão usa de graça. Quem paga é a administração do território, com uma assinatura mensal. Testamos a hipótese de R$ 400 por mês: com esse preço, um território já cobre a infraestrutura e paga a implantação em cerca de dois meses e meio. É uma hipótese, que veio de simulações. Desde o primeiro checkpoint, o que mudou foi [preencher com o histórico do CP1]."
+> "O cidadão usa de graça. Quem paga é a administração do território, com uma assinatura mensal: R$ 400 para campus e parque empresarial, R$ 200 para condomínio. A nuvem custa entre 30 e 60 dólares por mês, cerca de R$ 250. Com R$ 400, um território já cobre esse custo e a implantação se paga em cerca de dois meses e meio. É uma hipótese, que ajustamos em entrevistas simuladas. No caminho, mudamos duas coisas: reduzimos a IA a uma única categoria, sempre com confirmação humana, e passamos a cobrar por segmento."
 
-Números a conferir com o PDF de BI: custo fixo, preço e meses de retorno. **Atenção ao custo:** o modelo de negócio usa cerca de R$ 150 por mês de custo fixo, e a estimativa real da nuvem no Azure é de US$ 30 a 60 por mês (documento de custos). Alinhem os dois antes de gravar e digam qual valor vale.
+Números iguais aos do PDF de BI e dos slides: nuvem US$ 30–60/mês (≈ R$ 250, pior caso R$ 330), preço R$ 400 (campus e parque) e R$ 200 (condomínio), implantação R$ 660 paga em ~2,4 meses. A estimativa de nuvem vem de `docs/custos_e_lgpd.md`.
 
 ### 5. Impacto e ODS · 4:00–4:30 · Joseh
 
@@ -91,7 +91,7 @@ Depois, rodem `docs/pitch_preflight.sh` (confere URL, página, painel, portal de
 - [ ] URL testada **no celular pela rede móvel**, e o ambiente no ar até o fim da correção (cerca de 26/11).
 - [ ] **Tokens e senhas fora da tela.** Colem o token de operador no painel **antes** de gravar e corte esse trecho, ou usem a aba já autenticada. O painel guarda o token só na aba.
 - [ ] Corte de 10 a 20 s do robô UiPath, com a fala da decisão D2.
-- [ ] Números do bloco 4 **iguais aos do PDF** (custo, preço, meses). Corrijam o custo (R$ 150 contra US$ 30 a 60).
+- [ ] Números do bloco 4 **iguais aos do PDF** (nuvem ≈ R$ 250, preço R$ 400/R$ 200, 2,4 meses). Já estão alinhados no PDF e nos slides.
 - [ ] Vídeo em **link público** (YouTube não listado, ou Drive com acesso a qualquer pessoa com o link), com os dois integrantes aparecendo e falando.
 - [ ] Cronômetro: no máximo **5:00**. Ensaiem uma vez cronometrando.
 - [ ] Depois de gravar, coloquem o link do vídeo em `docs/entrega_bi/links.json` e rodem `python3 gerar_pdf.py` na pasta `docs/entrega_bi`.

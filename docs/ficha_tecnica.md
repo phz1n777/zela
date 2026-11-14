@@ -5,7 +5,7 @@ A mesma ficha vale para todas as disciplinas. Os PDFs, vídeos e prints de cada 
 | Campo | Conteúdo |
 | --- | --- |
 | Nome do produto | Zela: Zeladoria Urbana por Foto (nome provisório) |
-| Cidadão e território | Quem circula a pé, de bicicleta, de carro ou em cadeira de rodas pela região piloto **[definir a região]** |
+| Cidadão e território | Quem circula a pé, de bicicleta, de carro ou em cadeira de rodas pelo bairro Jardim das Belezas, onde mora um dos integrantes (território piloto) |
 | Problema, em uma frase | Danos na via ficam sem relato claro porque as pessoas não sabem onde relatar, o que informar ou se o problema já foi encaminhado |
 | Proposta de valor | Transformar uma foto e um local em uma ocorrência estruturada e acompanhável |
 | Arquitetura: componentes | App web (PWA) · API FastAPI · Visão (YOLO11n) · SQLite/Postgres · Airflow · Robô UiPath · FonteBot (GenAI) · Placa com QR (Maker Lab) · Docker, Terraform e GitHub Actions |

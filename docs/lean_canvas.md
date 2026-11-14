@@ -1,6 +1,6 @@
 # Lean Canvas consolidado: Zela (Zeladoria Urbana por Foto)
 
-> Versão da GS (11/2026). A rubrica avalia os **9 blocos com o que foi validado desde o CP1 e o que mudou pelo caminho**. Por isso cada bloco tem um **status** e a **evidência**. Preencham o histórico abaixo com o material dos checkpoints anteriores (canvas, entrevistas, MVP 0). Onde não houver evidência, o status fica como hipótese.
+> Versão da GS (11/2026). A rubrica avalia os **9 blocos com o que foi validado desde o CP1 e o que mudou pelo caminho**. Por isso cada bloco tem um **status** e a **evidência**. Onde não houver evidência, o status fica como hipótese.
 
 **Legenda de status:** ✅ validado (com evidência citada) · 🔶 parcialmente validado · ⬜ hipótese. **(sim.)** indica que o sinal vem das [entrevistas simuladas](entrevistas_simuladas.md), autorizadas pelo professor, e não de pessoas reais.
 
@@ -15,23 +15,18 @@
 | 4 | **Solução** | Formulário web sem cadastro aberto por QR · visão que sugere "dano na pista" com confirmação humana · painel de triagem · robô que abre a ordem de serviço · indicadores por período. | ✅ (técnica) | MVP ponta a ponta na URL pública · 32 testes automatizados · DAG executada · robô no portal de demonstração |
 | 5 | **Canais** | Placas com QR nos pontos do território (Maker Lab), comunicação interna, venda consultiva com piloto gratuito. | ⬜ | Teste de leitura do QR no local (Maker Lab) |
 | 6 | **Fontes de receita** | Assinatura por território, paga pelo comprador, com **preço por segmento**: R$ 400/mês para campus e parque (contrato anual) e R$ 200/mês para condomínio. O cidadão nunca paga. | 🔶 (sim.) | E1: R$ 400–600 · E2: R$ 150–250 · E3: R$ 400–800 (simulados) |
-| 7 | **Estrutura de custos** | Nuvem, domínio, placas, implantação e suporte, licença de RPA ao escalar, chamadas de IA. Valores na seção "A conta" do modelo de negócio. | 🔶 | Estimativa pela calculadora de preços da nuvem. Ainda não há fatura real |
+| 7 | **Estrutura de custos** | Nuvem ≈ US$ 30–60/mês (≈ R$ 250), domínio, placas, implantação e suporte, licença de RPA ao escalar, chamadas de IA. Valores na seção "A conta" do modelo de negócio. | 🔶 | Estimativa do ambiente publicado no Azure ([custos_e_lgpd.md](custos_e_lgpd.md)). Ainda não há fatura real |
 | 8 | **Métricas-chave** | Relatos que chegam ao painel · % de sugestões confirmadas · tempo do relato até a OS · % descartados · leituras do QR por placa. | 🔶 | As métricas são calculadas pela DAG e pela API (`/metrics`). Faltam dados de piloto real |
 | 9 | **Vantagem injusta** | Ainda **não há**. Candidato: o histórico de relatos com foto e local do território, que melhora o modelo de visão local. | ⬜ | Só existe depois do piloto |
 
-## O que mudou desde o CP1
+## O que mudou pelo caminho
 
-> **A preencher pela equipe** com o canvas e as entrevistas dos checkpoints anteriores. Exemplo de linha: "CP1: o comprador era o cidadão (app pago) → GS: o cidadão usa grátis e o comprador é a administração, porque nas entrevistas ninguém pagaria para relatar buraco."
-
-| Checkpoint | O que acreditávamos | O que aprendemos (evidência) | O que mudou no canvas |
+| Momento | O que acreditávamos | O que aprendemos (evidência) | O que mudou no canvas |
 | --- | --- | --- | --- |
-| CP1 | | | |
+| Proposta inicial → proposta revisada | A IA "classifica e protocola" vários problemas (buraco, bueiro, lixo) direto na prefeitura | O dataset (RDD2022) só cobre dano na pista, e o portal oficial exige prova de viabilidade | Uma categoria automática com confirmação humana. Encaminhamento para fila de demonstração. Sem promessa de reparo |
 | Entrevistas **simuladas** (11/2026) | Um preço único de R$ 400 para qualquer território. RPA como integração padrão | Condomínio paga menos. Campus e parque querem a OS no sistema que já usam. Parque prefere API | Preço por segmento. Campus e parque como early adopters. Integração por API quando houver, RPA quando não houver. Acessibilidade como próximo passo |
-| MVP 0 | | | |
-| MVP 1 | | | |
-| GS | IA "classifica e protocola" vários problemas na prefeitura | O dataset (RDD2022) só cobre dano na pista, e o portal oficial exige prova de viabilidade | Uma categoria automática com confirmação humana. Encaminhamento para fila de demonstração. Sem promessa de reparo |
 
-A linha da GS já está preenchida porque é uma mudança documentada neste repositório: compare a proposta original com a revisada.
+As duas mudanças estão documentadas neste repositório: a proposta original contra a revisada, e [entrevistas_simuladas.md](entrevistas_simuladas.md).
 
 ## Riscos principais
 

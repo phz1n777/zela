@@ -12,7 +12,7 @@ O cidadão registra um buraco ou outro dano na pista com uma foto e a localizaç
 
 **Dentro**
 
-- Uma região piloto pequena e conhecida (_a definir_).
+- Território piloto: o bairro Jardim das Belezas, onde mora um dos integrantes. O piloto serve para validar o uso pelo cidadão; os primeiros compradores pagantes continuam sendo campus e parque empresarial.
 - Uma categoria automática: **dano na pista** (buraco ou rachadura). As demais ocorrências podem ser registradas por categoria manual, sem detecção automática.
 - Formulário curto e responsivo, sem exigir conta. A pessoa confirma a sugestão da visão.
 - Painel de triagem com foto, local, categoria sugerida, confirmação humana e status.
@@ -34,7 +34,7 @@ A classificação apoia a triagem. Ela não substitui a avaliação humana nem d
 | Campo | Conteúdo |
 | --- | --- |
 | Nome do produto | Zela: Zeladoria Urbana por Foto (provisório) |
-| Cidadão e território | Quem circula a pé, de bicicleta, de carro ou em cadeira de rodas pela região piloto |
+| Cidadão e território | Quem circula a pé, de bicicleta, de carro ou em cadeira de rodas pelo bairro Jardim das Belezas (território piloto) |
 | Problema, em uma frase | Danos na via ficam sem relato claro porque as pessoas não sabem onde relatar, o que informar ou se o problema já foi encaminhado |
 | Proposta de valor | Transformar uma foto e um local em uma ocorrência estruturada e acompanhável |
 | Arquitetura: componentes | PWA · API FastAPI · Visão (YOLO) · SQLite/Postgres · Airflow · Robô UiPath · FonteBot (GenAI) · Placa QR (Maker Lab) · Docker, Terraform e GitHub Actions |
@@ -57,12 +57,12 @@ A classificação apoia a triagem. Ela não substitui a avaliação humana nem d
 | [`api/`](api) | Base de todas | API no contrato comum (`reports`), com confirmação humana, triagem e testes |
 | [`web/`](web) | Base / BI (demo do pitch) | App do cidadão (relato, confirmação e protocolo) e painel de triagem, servidos pela API |
 | [`vision/`](vision) | Applied Computer Vision | Pronto para treinar no Colab. A API usa o modelo quando o `best.pt` existe. **Ainda sem o modelo treinado**: o MVP no ar roda sem a sugestão automática |
-| [`genai/`](genai) | Generative AI for Engineering | Notebook da Aula 09.1 com o FonteBot, executado e com evidências. Falta o professor confirmar o notebook-base |
+| [`zela-genai`](https://github.com/phz1n777/zela-genai) | Generative AI for Engineering | Repositório separado, só com o FonteBot: notebook executado, FAQ, README e evidências |
 | [`data/`](data) | Big Data & Data Integration | DAG `zela_relatos` rodando no Airflow 2.10, com diagrama e dicionário de dados. A entrega oficial, com os prints do Airflow e o PDF, está no repositório do Joseh: https://github.com/Zoviskgabriel/BigData-Data-Zeladoria-Urbana-por-Foto |
 | [`rpa/`](rpa) | Robotic Process Automation | Assessment, business case, BPMN As-Is e To-Be e especificação do robô. O pacote oficial (PDF, projeto UiPath com `.xaml` e vídeo) foi entregue à parte pelo Joseh. O robô opera o portal de demonstração dele, não o MVP no Azure |
 | [`infra/`](infra) | Secure DevOps & Cloud | Em produção no Azure Container Apps (Terraform, Postgres, painel no Grafana e alerta de 5xx que disparou). Pipeline no GitHub Actions com Gitleaks, Semgrep, Trivy e deploy por OIDC: a execução [43093596676](https://github.com/phz1n777/zela/actions/runs/43093596676) passou nos 6 jobs, em runner próprio, porque os runners do GitHub estão bloqueados por cobrança. PDF da entrega em [docs/entrega_devsecops](docs/entrega_devsecops/Zela_DevSecOps.pdf), com as limitações conhecidas |
 | [`maker/`](maker) | Project-Based Maker Lab | **Não iniciado.** Sem responsável. O enunciado pede o redesenho de um objeto real da cidade, com CAD, peças fabricadas e publicação no MakerWorld |
-| [`docs/`](docs) | BI & Startup Development | Lean Canvas, modelo de negócio, roteiro de entrevistas, ficha técnica, roteiro do pitch e PDF da entrega. Faltam o histórico do CP1 e o vídeo do pitch |
+| [`docs/`](docs) | BI & Startup Development | Lean Canvas, modelo de negócio, roteiro de entrevistas, ficha técnica, roteiro do pitch e PDF da entrega. Falta o vídeo do pitch |
 
 ## Contrato de dados compartilhado
 

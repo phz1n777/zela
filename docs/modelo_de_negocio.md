@@ -26,7 +26,7 @@
 - **Preço por segmento** (ajustado depois das [entrevistas simuladas](entrevistas_simuladas.md)):
   - campus e parque empresarial: **R$ 400/mês**, em contrato anual;
   - condomínio: **R$ 200/mês**, porque na simulação o síndico só aprovaria R$ 150–250.
-- A âncora de R$ 400 vem da conta abaixo: é o menor valor em que **1 território** cobre a infraestrutura e paga a implantação em menos de 3 meses. Com R$ 200, são 2 territórios e cerca de 8 meses. Por isso o condomínio entra como segundo segmento, e não como early adopter.
+- A âncora de R$ 400 vem da conta abaixo: é o menor valor em que **1 território** cobre a infraestrutura e paga a implantação em menos de 3 meses. Com R$ 200, são 4 territórios para cobrir a nuvem e cerca de 8 meses para pagar a implantação. Por isso o condomínio entra como segundo segmento, e não como early adopter.
 - **Tudo isso é hipótese:** o sinal vem de simulação, não de compradores reais.
 
 ## A conta (estimativa)
@@ -35,18 +35,20 @@
 - US$ 1 = R$ 5,50.
 - Hora da equipe (implantação e suporte) = R$ 60.
 - Infraestrutura compartilhada entre todos os territórios: uma instância da API, um banco, um armazenamento.
-- Preços de referência da nuvem para conferir na calculadora oficial do Azure (região Brazil South). Ainda não há fatura real.
+- Custo da nuvem pela estimativa do ambiente publicado (Azure, região `spaincentral`), feita a partir de preços públicos. Ainda não há fatura real: conferir em *Cost Management + Billing*.
 
 ### Custo fixo mensal (compartilhado)
 
+Valores da estimativa de nuvem em [custos_e_lgpd.md](custos_e_lgpd.md): **US$ 30 a 60 por mês** com o piloto ligado o tempo todo, no Azure (`spaincentral`).
+
 | Item | Estimativa |
 | --- | --- |
-| Banco Postgres gerenciado (menor tamanho) + armazenamento | ~ R$ 100 |
-| Container da API e do app (consumo; no volume do piloto fica perto da cota gratuita) | ~ R$ 0–20 |
-| Armazenamento de fotos e logs | ~ R$ 20 |
+| Container App (0,5 vCPU, 1 GiB, réplica sempre ligada) | maior parcela variável |
+| PostgreSQL Flexible B1ms + 32 GB | parcela fixa principal |
+| Container Registry (Basic), logs e alerta | pequena |
 | Domínio `.com.br` (~R$ 40/ano) | ~ R$ 4 |
 | LLM do FonteBot (modelos gratuitos no MVP) | R$ 0 |
-| **Total fixo** | **~ R$ 150/mês** |
+| **Total fixo** | **US$ 30–60 ≈ R$ 165–330/mês. Usamos R$ 250 (meio da faixa)** |
 
 ### Custo por território
 
@@ -57,13 +59,13 @@
 
 ### Resultado por cenário de preço
 
-| Preço/mês | Margem por território (preço − R$ 120) | Territórios para cobrir o fixo (R$ 150) | Meses para pagar a implantação (R$ 660) |
+| Preço/mês | Margem por território (preço − R$ 120) | Territórios para cobrir o fixo (R$ 250; pior caso R$ 330) | Meses para pagar a implantação (R$ 660) |
 | --- | --- | --- | --- |
-| R$ 200 | R$ 80 | 2 | ~8,3 |
-| **R$ 400** | **R$ 280** | **1** | **~2,4** |
+| R$ 200 | R$ 80 | 4 (5 no pior caso) | ~8,3 |
+| **R$ 400** | **R$ 280** | **1 (2 no pior caso)** | **~2,4** |
 | R$ 800 | R$ 680 | 1 | ~1,0 |
 
-**Leitura:** com R$ 400, **1 território paga a infraestrutura** e a implantação se paga em cerca de 2,4 meses. Com 5 territórios, a receita (R$ 2.000) contra o custo (R$ 150 + 5 × R$ 120 = R$ 750) deixa ~R$ 1.250/mês. A conta só fecha **se a hipótese de preço se confirmar**, e é isso que as conversas testam.
+**Leitura:** com R$ 400, **1 território cobre a nuvem** no cenário médio (R$ 250), e são 2 no pior caso (R$ 330). A implantação se paga em cerca de 2,4 meses. Com 5 territórios, a receita (R$ 2.000) contra o custo (R$ 250 + 5 × R$ 120 = R$ 850) deixa ~R$ 1.150/mês. A conta só fecha **se a hipótese de preço se confirmar**.
 
 **O que pode quebrar a conta:**
 - Suporte maior que 2 h/mês por território.
@@ -73,7 +75,7 @@
 
 ## Canais
 
-1. **Piloto gratuito** de 4 semanas num território conhecido (campus ou condomínio de um integrante), com autorização da administração.
+1. **Piloto de uso** de 4 semanas no território piloto (o bairro Jardim das Belezas, onde mora um dos integrantes), para validar o cidadão: leituras do QR, relatos e tempo até a triagem. Em seguida, **piloto gratuito com um comprador** (campus ou parque empresarial), com autorização da administração.
 2. **Placas com QR** nos pontos com mais problemas. É o canal de entrada do cidadão (Maker Lab).
 3. **Venda consultiva**, levando o relatório do piloto, com os indicadores da DAG, ao próximo comprador.
 4. **Futuro:** associações de bairro e subprefeituras, quando houver integração oficial.

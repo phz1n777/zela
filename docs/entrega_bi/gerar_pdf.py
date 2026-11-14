@@ -62,7 +62,7 @@ canvas = f"""
     "<b>Comprador:</b> campus e parque empresarial; condomínio com preço menor.",
     "<em>Early adopter:</em> facilities de campus que presta contas à diretoria."], "segmentos")}
 {bloco("7 · Estrutura de custos", "🔶", [
-    "Fixo compartilhado ≈ <b>R$ 150/mês</b> (banco, container, fotos, domínio).",
+    "Nuvem ≈ <b>US$ 30–60/mês (≈ R$ 250)</b>: container, banco, registro e logs.",
     "Por território: suporte ≈ R$ 120/mês; implantação ≈ R$ 660 (placas + instalação).",
     "Ao escalar: licença de RPA e LLM pago."], "custos")}
 {bloco("6 · Fontes de receita", "🔶 sim.", [
@@ -124,7 +124,7 @@ th {{ background: #e3f1ec; }}
 
 <h2>Ficha técnica do MVP</h2>
 <table>
-<tr><th>Cidadão e território</th><td>Quem circula a pé, de bicicleta, de carro ou em cadeira de rodas pela {territorio}</td></tr>
+<tr><th>Cidadão e território</th><td>Quem circula a pé, de bicicleta, de carro ou em cadeira de rodas pelo {territorio}</td></tr>
 <tr><th>Problema</th><td>Danos na via ficam sem relato claro porque as pessoas não sabem onde relatar, o que informar ou se o problema já foi encaminhado</td></tr>
 <tr><th>Proposta de valor</th><td>Transformar uma foto e um local em uma ocorrência estruturada e acompanhável</td></tr>
 <tr><th>Arquitetura</th><td>App web (PWA) · API FastAPI · Visão (YOLO11n no RDD2022) · Postgres · Airflow · Robô UiPath · FonteBot (GenAI) · Placa com QR · Docker, Terraform e GitHub Actions</td></tr>
@@ -143,10 +143,8 @@ th {{ background: #e3f1ec; }}
 <h2>O que mudou pelo caminho</h2>
 <table>
 <tr><th>Momento</th><th>O que acreditávamos</th><th>O que aprendemos</th><th>O que mudou</th></tr>
-<tr><td>CP1</td><td class="falta">[preencher]</td><td class="falta">[preencher]</td><td class="falta">[preencher]</td></tr>
+<tr><td>Proposta inicial → revisada</td><td>IA “classifica e protocola” vários problemas na prefeitura</td><td>O dataset só cobre dano na pista; o portal oficial exige prova de viabilidade</td><td>Uma categoria automática com confirmação humana; encaminhamento para fila de demonstração; sem promessa de reparo</td></tr>
 <tr><td>Entrevistas <b>simuladas</b></td><td>Preço único de R$ 400; RPA como integração padrão</td><td>Condomínio paga menos (R$ 150–250); campus e parque querem a OS no sistema que já usam; parque prefere API</td><td>Preço por segmento; campus e parque como early adopters; API quando houver, RPA quando não; acessibilidade como próximo passo</td></tr>
-<tr><td>MVP 0 / MVP 1</td><td class="falta">[preencher]</td><td class="falta">[preencher]</td><td class="falta">[preencher]</td></tr>
-<tr><td>GS</td><td>IA “classifica e protocola” vários problemas na prefeitura</td><td>O dataset só cobre dano na pista; o portal oficial exige prova de viabilidade</td><td>Uma categoria automática com confirmação humana; encaminhamento para fila de demonstração; sem promessa de reparo</td></tr>
 </table>
 
 <h2>Entrevistas simuladas (síntese)</h2>
@@ -168,22 +166,22 @@ th {{ background: #e3f1ec; }}
 </table>
 
 <h2>A conta (estimativa)</h2>
-<p class="nota">Premissas: US$ 1 = R$ 5,50 · hora da equipe = R$ 60 · infraestrutura compartilhada entre territórios · preços de referência da nuvem (Azure, Brazil South), sem fatura real.</p>
+<p class="nota">Premissas: US$ 1 = R$ 5,50 · hora da equipe = R$ 60 · infraestrutura compartilhada entre territórios · custo de nuvem estimado para o ambiente publicado (Azure, spaincentral), sem fatura real.</p>
 <table>
 <tr><th>Custo fixo mensal (compartilhado)</th><th>Estimativa</th></tr>
-<tr><td>Banco Postgres gerenciado + armazenamento</td><td>~ R$ 100</td></tr>
-<tr><td>Container da API e do app (consumo)</td><td>~ R$ 0–20</td></tr>
-<tr><td>Fotos e logs</td><td>~ R$ 20</td></tr>
+<tr><td>Container App (0,5 vCPU, réplica sempre ligada)</td><td>maior parcela</td></tr>
+<tr><td>PostgreSQL Flexible B1ms + 32 GB</td><td>parcela fixa principal</td></tr>
+<tr><td>Container Registry, logs e alerta</td><td>pequena</td></tr>
 <tr><td>Domínio .com.br</td><td>~ R$ 4</td></tr>
-<tr class="destaque"><td>Total fixo</td><td>~ R$ 150/mês</td></tr>
+<tr class="destaque"><td>Total fixo (estimativa do ambiente publicado)</td><td>US$ 30–60 ≈ R$ 165–330/mês · usamos R$ 250</td></tr>
 </table>
 <table>
-<tr><th>Preço/mês</th><th>Margem por território (− R$ 120 de suporte)</th><th>Territórios para cobrir o fixo</th><th>Meses para pagar a implantação (R$ 660)</th></tr>
-<tr><td>R$ 200</td><td>R$ 80</td><td>2</td><td>~8,3</td></tr>
-<tr class="destaque"><td>R$ 400</td><td>R$ 280</td><td>1</td><td>~2,4</td></tr>
+<tr><th>Preço/mês</th><th>Margem por território (− R$ 120 de suporte)</th><th>Territórios para cobrir o fixo (R$ 250; pior caso R$ 330)</th><th>Meses para pagar a implantação (R$ 660)</th></tr>
+<tr><td>R$ 200</td><td>R$ 80</td><td>4 (5)</td><td>~8,3</td></tr>
+<tr class="destaque"><td>R$ 400</td><td>R$ 280</td><td>1 (2)</td><td>~2,4</td></tr>
 <tr><td>R$ 800</td><td>R$ 680</td><td>1</td><td>~1,0</td></tr>
 </table>
-<p>Com R$ 400, <b>1 território paga a infraestrutura</b>. Com 5 territórios, a receita (R$ 2.000) contra o custo (≈ R$ 750) deixa ≈ R$ 1.250/mês. A conta fecha <b>se a hipótese de preço se confirmar</b>, e é isso que as conversas com compradores testam.</p>
+<p>Com R$ 400, <b>1 território cobre a nuvem</b> no cenário médio (2 no pior caso). Com 5 territórios, a receita (R$ 2.000) contra o custo (≈ R$ 850) deixa ≈ R$ 1.150/mês. A conta fecha <b>se a hipótese de preço se confirmar</b>, e é isso que as conversas com compradores testam.</p>
 
 <h2>Limites declarados</h2>
 <p class="nota">Não prometemos reparo nem prazo. Não há detecção automática de lixo, bueiros ou calçadas. Não há integração oficial antes da prova de viabilidade. Os dados simulados estão marcados como demonstração. A classificação apoia a triagem e não substitui a avaliação humana.</p>
